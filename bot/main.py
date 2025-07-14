@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
-from config import Config
+from config import config
 from handlers.start import router as start_router
 
 
@@ -11,12 +11,10 @@ async def main():
     """
     Start the bot
     """
-    config = Config() # type: ignore
-    
-    bot = Bot(token=config.bot_token)
-    redis = Redis(host=config.db_host)
-    storage = RedisStorage(redis=redis)
-    dispatcher = Dispatcher(storage=storage)
+    bot = Bot(token=config.TG_BOT_TOKEN)
+    # redis = Redis(host=config.DB_HOST)
+    # storage = RedisStorage(redis=redis)
+    dispatcher = Dispatcher(storage=None)
     
     # include routers here
     dispatcher.include_routers(start_router)
