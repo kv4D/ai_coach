@@ -1,20 +1,31 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from base_model import BaseModel
+from sqlalchemy import ForeignKey
+from . base_model import BaseModel
 
 
 class ActivityLevel(BaseModel):
-    pass
+    __tablename__ = 'activity_labels'
+    
+    description: Mapped[str]
+    name: Mapped[str]
 
 
 class User(BaseModel):
-    id: Mapped[int] = mapped_column(primary_key=True,
-                                    autoincrement=True)
-    username: Mapped[str] = mapped_column()
+    __tablename__ = 'users'
+    
+    username: Mapped[str]
     age: Mapped[int]
     weight: Mapped[float]
     height: Mapped[float]
-    gender: Mapped[str]
+    gender: Mapped[str] # maybe be more strict?
     goal: Mapped[str | None]
     # later on create table with activity levels
     # or maybe enums?
     activity_level: Mapped[int]
+
+
+class TrainingPlan(BaseModel):
+    __tablename__ = 'training_plans'
+    
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    # by days or in one string?
