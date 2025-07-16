@@ -1,6 +1,6 @@
 from . base import BaseCRUD
-from db.models import User
+from db.models import UserModel
 
 
-class UserCRUD(BaseCRUD):
-    _model = User
+class UserCRUD(BaseCRUD[UserModel]):
+    _model = UserModel

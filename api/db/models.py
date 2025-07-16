@@ -3,14 +3,14 @@ from sqlalchemy import ForeignKey
 from . base_model import BaseModel
 
 
-class ActivityLevel(BaseModel):
+class ActivityLevelModel(BaseModel):
     __tablename__ = 'activity_labels'
     
     description: Mapped[str]
     name: Mapped[str]
 
 
-class User(BaseModel):
+class UserModel(BaseModel):
     __tablename__ = 'users'
     
     username: Mapped[str]
@@ -21,10 +21,10 @@ class User(BaseModel):
     goal: Mapped[str | None]
     # later on create table with activity levels
     # or maybe enums?
-    activity_level: Mapped[int]
+    activity_level: Mapped[int | None]
 
 
-class TrainingPlan(BaseModel):
+class TrainingPlanModel(BaseModel):
     __tablename__ = 'training_plans'
     
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
