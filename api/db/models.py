@@ -1,13 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
+from typing import Optional
 from .base_model import BaseModel
-
-
-class ActivityLevelModel(BaseModel):
-    __tablename__ = 'activity_labels'
-    
-    description: Mapped[str]
-    name: Mapped[str]
 
 
 class UserModel(BaseModel):
@@ -17,11 +11,25 @@ class UserModel(BaseModel):
     age: Mapped[int]
     weight: Mapped[float]
     height: Mapped[float]
-    gender: Mapped[str] # maybe be more strict?
-    goal: Mapped[str | None]
-    # later on create table with activity levels
-    # or maybe enums?
-    activity_level: Mapped[int | None]
+    gender: Mapped[str] # TODO: maybe be more strict?
+    goal: Mapped[Optional[str]]
+    
+    # connect to activity labels
+    activity_level_id: Mapped[int] = mapped_column(ForeignKey('activity_levels.id'))
+    activity_level: Mapped['ActivityLevelModel'] = relationship("ActivityLevelModel",
+                                                                back_populates="users")
+
+
+class ActivityLevelModel(BaseModel):
+    __tablename__ = 'activity_levels'
+    
+    description: Mapped[str]
+    name: Mapped[str]
+    level: Mapped[int]
+    
+    # connect to user
+    users: Mapped[list['UserModel']] = relationship("UserModel",
+                                                   back_populates="activity_level")
 
 
 class TrainingPlanModel(BaseModel):
