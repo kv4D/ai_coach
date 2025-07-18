@@ -9,9 +9,19 @@ engine = create_async_engine(url=config.api_db_url)
 session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
+async def get_db_session():
+    """
+    Provides session to endpoint as a dependency.
+    Don't forget to use 'session.commit()' when
+    making changes in database.
+    """
+    async with session_maker() as session:
+            yield session
+
 def connect(commit: bool = True):
     """
-    Decorator creates database session for method and closes it.
+    Decorator creates database session for a method and closes it.
+    Experimental feature, use get_db_session() instead.
     """
     def decorator(func):
         @wraps(func)

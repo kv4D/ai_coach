@@ -38,6 +38,7 @@ class BaseCRUD(Generic[T]):
     @classmethod
     async def get_by_id(cls, id: int, session: AsyncSession):
         query = select(cls._model).filter_by(id=id)
+        
         result = await session.execute(query)
         
         # there can be only one entry or none

@@ -1,5 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.user import User
+from db.database import get_db_session
+from service import user as service
 
 
 router = APIRouter(prefix=f"/user")
@@ -8,14 +11,18 @@ router = APIRouter(prefix=f"/user")
 @router.get('')
 def ping() -> str:
     """Test endpoint"""
-    return 'hello, User'
+    return 'Hello, User'
 
 @router.post('/create')
-def create(user: User):
+async def create_user_endpoint(user_data: User,
+                               session: AsyncSession = Depends(get_db_session)):
     """Create new user"""
-    return None
+    return await service.create(user_data.model_dump(), session=session)
 
 @router.get('/get/{id}')
-def get_by_id(id: int):
+async def get_by_id(id: int, 
+                    session: AsyncSession = Depends(get_db_session)):
     """Get a user by id"""
-    return None
+    user = await service.get_by_id(id, session=session)
+    print(type(user))
+    return user
