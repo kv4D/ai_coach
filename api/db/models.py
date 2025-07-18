@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey
-from . base_model import BaseModel
+from .base_model import BaseModel
 
 
 class ActivityLevelModel(BaseModel):

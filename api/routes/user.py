@@ -24,5 +24,10 @@ async def get_by_id(id: int,
                     session: AsyncSession = Depends(get_db_session)):
     """Get a user by id"""
     user = await service.get_by_id(id, session=session)
-    print(type(user))
     return user
+
+@router.get('/all')
+async def get_all(session: AsyncSession = Depends(get_db_session)):
+    """Get a user by id"""
+    users = await service.get_all(session=session)
+    return users
