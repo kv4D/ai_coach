@@ -14,10 +14,12 @@ class UserModel(BaseModel):
     gender: Mapped[str] # TODO: maybe be more strict?
     goal: Mapped[Optional[str]]
     
-    # connect to activity labels
+    # connect to activity levels
     activity_level_id: Mapped[int] = mapped_column(ForeignKey('activity_levels.id'))
     activity_level: Mapped['ActivityLevelModel'] = relationship("ActivityLevelModel",
                                                                 back_populates="users")
+    
+    # connect to training plan
 
 
 class ActivityLevelModel(BaseModel):

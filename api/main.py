@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from routes import user
+from routes import user, activity_levels
 
 
 app = FastAPI()
 
 # include routers here
 app.include_router(user.router)
+app.include_router(activity_levels.router)
 
 # for launching in development
 if __name__ == "__main__":
