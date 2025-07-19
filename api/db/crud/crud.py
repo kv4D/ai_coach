@@ -1,9 +1,8 @@
 from typing import Self
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.base_model import BaseModel
 from .base import BaseCRUD
-from db.models import UserModel, ActivityLevelModel
+from db.models.models import UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):

@@ -1,6 +1,6 @@
 from typing import TypeVar, Iterable
 from pydantic import BaseModel as PydanticModel
-from db.base_model import BaseModel
+from db.models.base_model import BaseModel
 
 
 # type parameter for Pydantic BaseModel children

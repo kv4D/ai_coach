@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Generic, TypeVar, Iterable
-from db.base_model import BaseModel
+from db.models.base_model import BaseModel
 
 
 # Type parameter for BaseModel children
