@@ -2,11 +2,49 @@ from typing import Self
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from .base import BaseCRUD
-from db.models.models import UserModel, ActivityLevelModel
+from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):
     _model = UserModel
+
+class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
+    _model = TrainingPlanModel
+    
+    @classmethod
+    async def get_by_user_id(cls, user_id: int, session: AsyncSession) -> None | TrainingPlanModel:
+        """Get the training plan for a user by their id.
+
+        Args:
+            user_id (int): user id in database
+            session (AsyncSession): asynchronous database session
+
+        Returns:
+            None | TrainingPlanModel: entry or None
+        """
+        query = select(cls._model).filter_by(user_id=user_id)
+        
+        result = await session.execute(query)
+        
+        # there can be only one entry or none
+        entry = result.scalar_one_or_none()
+        return entry
+    
+    @classmethod
+    async def create_for_user(cls, user_id: int, session: AsyncSession, **plan_data) -> TrainingPlanModel:
+        """Create a training plan for the user by their id.
+
+        Args:
+            user_id (int): user id in database
+            session (AsyncSession): asynchronous database session
+
+        Returns:
+            None | TrainingPlanModel: entry or None
+        """
+        instance = cls._model(**plan_data, user_id=user_id)
+        session.add(instance=instance)
+        await session.flush()
+        return instance
 
 class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
     _model = ActivityLevelModel
