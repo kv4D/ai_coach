@@ -20,7 +20,7 @@ async def create_activity_level(level_data: ActivityLevel,
     return await service.create(level_data.model_dump(), session=session)
 
 @router.get('/all')
-async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[int]:
+async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[ActivityLevel] | None:
     """Get all activity levels in numbers"""
     levels = await service.get_all_levels(session=session)
     return levels

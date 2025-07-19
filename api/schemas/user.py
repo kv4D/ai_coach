@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, \
     field_validator, Field
+from .activity_level import ActivityLevel
 
 
 class User(BaseModel):
@@ -13,7 +14,8 @@ class User(BaseModel):
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
-
+    activity_level_id: int
+    
     model_config = ConfigDict(from_attributes=True)
 
     @field_validator('gender')

@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.crud.crud import ActivityLevelCRUD
 from schemas.activity_level import ActivityLevel
+from schemas.utils import models_validate
 
 
 async def create(level_data: dict, session: AsyncSession):
@@ -21,5 +22,4 @@ async def get_info_by_level(level: int, session: AsyncSession):
 async def get_all_levels(session: AsyncSession):
     """Get all 'level' fields of activity levels in the database"""
     levels = await ActivityLevelCRUD.get_all(session=session)
-    levels = [level.level for level in levels]
-    return levels
+    return models_validate(ActivityLevel, levels)
