@@ -8,6 +8,7 @@ from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 class UserCRUD(BaseCRUD[UserModel]):
     _model = UserModel
 
+
 class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     _model = TrainingPlanModel
     
@@ -23,7 +24,6 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
             None | TrainingPlanModel: entry or None
         """
         query = select(cls._model).filter_by(user_id=user_id)
-        
         result = await session.execute(query)
         
         # there can be only one entry or none
@@ -45,6 +45,7 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         session.add(instance=instance)
         await session.flush()
         return instance
+
 
 class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
     _model = ActivityLevelModel

@@ -1,21 +1,23 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
+from exceptions import NotFoundError
 from db.crud.crud import TrainingPlanCRUD
 from schemas.training_plan import TrainingPlan
 
 
 async def create(plan_data: dict, user_id: int, session: AsyncSession):
-    """Create new activity level"""
     try:
         plan = await TrainingPlanCRUD.create_for_user(user_id, session=session, **plan_data)
         await session.commit()
-        return plan.id
-    except Exception as e:
+        return plan
+    except IntegrityError as e:
         await session.rollback()
-        raise e
+        error_message = str(e).lower()
+        if 'foreign key' in error_message:
+            raise NotFoundError(f"No user with such ID.")
 
 async def get_user_plan(user_id: int, session: AsyncSession):
-    """Get info about the level in the database by its value"""
     plan = await TrainingPlanCRUD.get_by_user_id(user_id, session=session)
-    if plan:
-        return TrainingPlan.model_validate(plan)
-    return {'message': f'Not found with provided user id: {user_id}'}
+    if plan is None:
+        raise NotFoundError(f'No training plan for user with this ID: {user_id}')
+    return TrainingPlan.model_validate(plan)
