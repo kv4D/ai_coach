@@ -14,8 +14,8 @@ def ping() -> str:
     return 'Hello, User'
 
 @router.post('/create')
-async def create_user_endpoint(user_data: User,
-                               session: AsyncSession = Depends(get_db_session)):
+async def create_user(user_data: User,
+                      session: AsyncSession = Depends(get_db_session)):
     """Create new user"""
     return await service.create(user_data.model_dump(), session=session)
 

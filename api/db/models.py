@@ -9,9 +9,9 @@ class UserModel(BaseModel):
     
     username: Mapped[str]
     age: Mapped[int]
-    weight: Mapped[float]
-    height: Mapped[float]
-    gender: Mapped[str] # TODO: maybe be more strict?
+    weight_kg: Mapped[float]
+    height_cm: Mapped[float]
+    gender: Mapped[str]
     goal: Mapped[Optional[str]]
     
     # connect to activity levels
@@ -38,4 +38,5 @@ class TrainingPlanModel(BaseModel):
     __tablename__ = 'training_plans'
     
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    
     # by days or in one string?
