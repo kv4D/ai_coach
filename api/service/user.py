@@ -1,25 +1,34 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 from db.crud.crud import UserCRUD
 from schemas.user import User
 from schemas.utils import models_validate
+from exceptions import AlreadyExistError, NotFoundError
 
 
 async def create(user_data: dict, session: AsyncSession):
-    """Create new user"""
     try:
         user = await UserCRUD.create(session=session, **user_data)
         await session.commit()
-        return user.id
-    except Exception as e:
+        return user
+    except IntegrityError as e:
         await session.rollback()
-        raise e
+        error_message = str(e).lower()
+        
+        if 'foreign key' in error_message:
+            raise NotFoundError(f"No activity level with such ID.")
+        if 'unique' in error_message:
+            raise AlreadyExistError(f'There is already a user with such ID.')
 
 async def get_all(session: AsyncSession):
-    """Get all users in the database"""
     users = await UserCRUD.get_all(session=session)
-    return models_validate(User, users)
+    users = models_validate(User, users)
+    if users is None:
+        raise NotFoundError('There are no users yet.')
+    return users
 
 async def get_by_id(id: int, session: AsyncSession) -> User:
-    """Get a user by their ID"""
     user = await UserCRUD.get_by_id(id=id, session=session)
+    if user is None:
+        raise NotFoundError("There is no user with such ID.")
     return User.model_validate(user)

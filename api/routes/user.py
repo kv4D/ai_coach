@@ -17,7 +17,8 @@ def ping() -> str:
 async def create_user(user_data: User,
                       session: AsyncSession = Depends(get_db_session)):
     """Create new user"""
-    return await service.create(user_data.model_dump(), session=session)
+    response = await service.create(user_data.model_dump(), session=session)
+    return response
 
 @router.get('/get/{id}')
 async def get_by_id(id: int, 

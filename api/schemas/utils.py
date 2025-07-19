@@ -9,7 +9,7 @@ TModel = TypeVar("TModel", bound=PydanticModel)
 TDBModel = TypeVar("TDBModel", bound=BaseModel)
 
 def models_validate(model: type[TModel],
-                          db_models: Iterable[TDBModel]) -> list[TModel] | None:
+                    db_models: Iterable[TDBModel]) -> list[TModel] | None:
     """Convert database models to pydantic models.
 
     Args:

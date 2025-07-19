@@ -26,9 +26,10 @@ class BaseCRUD(Generic[TDBModel]):
         """
         instance = cls._model(**kwargs)
         session.add(instance=instance)
+
         await session.flush()
         return instance
-    
+
     @classmethod
     async def get_all(cls, session: AsyncSession,  **filter_kwargs) -> Iterable[TDBModel]:
         """Get all model entries in the database.
@@ -42,13 +43,12 @@ class BaseCRUD(Generic[TDBModel]):
         # TODO: it is possible to replace filter_kwargs with Pydantic Model
         # filters won't apply if there are none
         query = select(cls._model).filter_by(**filter_kwargs)
-        
         result = await session.execute(query)
-        
         # extract as model's objects
         entries = result.scalars().all()
+
         return entries
-    
+
     @classmethod
     async def get_by_id(cls, id: int, session: AsyncSession) -> None | TDBModel:
         """Get a model entry by id.
@@ -61,10 +61,8 @@ class BaseCRUD(Generic[TDBModel]):
             None | TDBModel: entry or None
         """
         query = select(cls._model).filter_by(id=id)
-        
         result = await session.execute(query)
-        
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
+
         return entry
-        
