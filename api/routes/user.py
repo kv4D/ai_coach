@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.user import User, UserInput
+from schemas.user import User, UserInput, UserUpdate
 from db.database import get_db_session
 from service import user as service
 
@@ -32,3 +32,10 @@ async def get_all(session: AsyncSession = Depends(get_db_session)):
     """Get a user by id"""
     users = await service.get_all(session=session)
     return users
+
+@router.patch('/update/{id}')
+async def update_user(id: int, 
+                      user_data: UserUpdate,
+                      session: AsyncSession = Depends(get_db_session)):
+    user = await service.update(id, user_data, session)
+    return user

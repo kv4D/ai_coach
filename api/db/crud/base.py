@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel as PydanticModel
 from typing import Generic, TypeVar, Iterable
+from exceptions import NotFoundError
 from db.models.base_model import BaseModel
 
 # Type parameter for BaseModel children
@@ -22,14 +23,14 @@ class BaseCRUD(Generic[TDBModel]):
             session (AsyncSession): asynchronous database session
 
         Returns:
-            TDBModel: created model instance
+            TDBModel: created model entry
         """
         data_dict = data.model_dump(exclude_unset=True)
-        instance = cls._model(**data_dict)
-        session.add(instance=instance)
+        entry = cls._model(**data_dict)
+        session.add(instance=entry)
 
         await session.flush()
-        return instance
+        return entry
 
     @classmethod
     async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel]:
@@ -59,9 +60,19 @@ class BaseCRUD(Generic[TDBModel]):
         Returns:
             None | TDBModel: entry or None
         """
-        query = select(cls._model).filter_by(id=id)
-        result = await session.execute(query)
-        # there can be only one entry or none
-        entry = result.scalar_one_or_none()
+        return await session.get(cls._model, id)
 
+    @classmethod
+    async def update_by_id(cls, id: int, update_data: PydanticModel, session: AsyncSession):
+        update_data_dict = update_data.model_dump(exclude_unset=True)
+        entry = await session.get(cls._model, id)
+        
+        if entry is None:
+            raise NotFoundError(
+                f"There is no {cls._model.__name__.lower()} entry with such ID: {id}.")
+        
+        for key, value in update_data_dict.items():
+            setattr(entry, key, value)
+        await session.flush()
         return entry
+

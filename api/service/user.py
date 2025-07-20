@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from db.crud.crud import UserCRUD
-from schemas.user import User, UserInput
+from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
 from exceptions import AlreadyExistError, NotFoundError
 
@@ -31,3 +31,14 @@ async def get_by_id(id: int, session: AsyncSession):
     if user is None:
         raise NotFoundError("There is no user with such ID.")
     return User.model_validate(user)
+
+async def update(id: int, 
+                 user_data: UserUpdate, 
+                 session: AsyncSession):
+    try:
+        user = await UserCRUD.update_by_id(id, user_data, session=session)
+        await session.commit()
+        return User.model_validate(user)
+    except NotFoundError:
+        await session.rollback()
+        raise

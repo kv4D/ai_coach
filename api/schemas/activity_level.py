@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
 
 
 class ActivityLevel(BaseModel):
@@ -9,7 +8,8 @@ class ActivityLevel(BaseModel):
     id: int = Field(description='Database ID')
     description: str = Field(description='About this activity level')
     name: str
-    level: int = Field(ge=0, description='Activity level number')
+    level: int = Field(ge=0, 
+                       description='Activity level number')
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -20,4 +20,5 @@ class ActivityLevelInput(BaseModel):
     """
     description: str = Field(description='About this activity level')
     name: str
-    level: int = Field(ge=0, description='Activity level number')
+    level: int = Field(ge=0, 
+                       description='Activity level number')
