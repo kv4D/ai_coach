@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from exceptions import AlreadyExistError, NotFoundError
 from db.crud.crud import ActivityLevelCRUD
-from schemas.activity_level import ActivityLevel, ActivityLevelInput
+from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
 from schemas.utils import models_validate
 
 
@@ -31,3 +31,14 @@ async def get_all_levels(session: AsyncSession):
     if levels is None:
         raise NotFoundError("There are no levels yet.")
     return models_validate(ActivityLevel, levels)
+
+async def update(id: int, 
+                 level_data: ActivityLevelUpdate, 
+                 session: AsyncSession):
+    try:
+        level = await ActivityLevelCRUD.update_by_id(id, level_data, session=session)
+        await session.commit()
+        return ActivityLevel.model_validate(level)
+    except NotFoundError:
+        await session.rollback()
+        raise

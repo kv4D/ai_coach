@@ -75,4 +75,3 @@ class BaseCRUD(Generic[TDBModel]):
             setattr(entry, key, value)
         await session.flush()
         return entry
-
