@@ -1,6 +1,5 @@
 from pydantic import BaseModel, ConfigDict, \
     field_validator, Field
-from .activity_level import ActivityLevel
 
 
 class User(BaseModel):

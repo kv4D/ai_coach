@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from pydantic import BaseModel as PydanticModel
 from typing import Generic, TypeVar, Iterable
 from db.models.base_model import BaseModel
-
 
 # Type parameter for BaseModel children
 TDBModel = TypeVar("TDBModel", bound=BaseModel)
@@ -15,7 +15,7 @@ class BaseCRUD(Generic[TDBModel]):
     _model: type[TDBModel]
     
     @classmethod
-    async def create(cls, session: AsyncSession, **kwargs) -> TDBModel:
+    async def create(cls, data: PydanticModel, session: AsyncSession) -> TDBModel:
         """Create a model entry in the database.
 
         Args:
@@ -24,14 +24,15 @@ class BaseCRUD(Generic[TDBModel]):
         Returns:
             TDBModel: created model instance
         """
-        instance = cls._model(**kwargs)
+        data_dict = data.model_dump(exclude_unset=True)
+        instance = cls._model(**data_dict)
         session.add(instance=instance)
 
         await session.flush()
         return instance
 
     @classmethod
-    async def get_all(cls, session: AsyncSession,  **filter_kwargs) -> Iterable[TDBModel]:
+    async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel]:
         """Get all model entries in the database.
 
         Args:
@@ -40,9 +41,7 @@ class BaseCRUD(Generic[TDBModel]):
         Returns:
             Iterable[TDBModel]: list of entries
         """
-        # TODO: it is possible to replace filter_kwargs with Pydantic Model
-        # filters won't apply if there are none
-        query = select(cls._model).filter_by(**filter_kwargs)
+        query = select(cls._model).filter_by()
         result = await session.execute(query)
         # extract as model's objects
         entries = result.scalars().all()

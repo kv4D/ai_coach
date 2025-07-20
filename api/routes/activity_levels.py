@@ -17,7 +17,7 @@ def ping() -> str:
 async def create_activity_level(level_data: ActivityLevel,
                                session: AsyncSession = Depends(get_db_session)):
     """Create new activity level"""
-    return await service.create(level_data.model_dump(), session=session)
+    return await service.create(level_data, session=session)
 
 @router.get('/all')
 async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[ActivityLevel] | None:

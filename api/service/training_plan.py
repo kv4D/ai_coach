@@ -2,12 +2,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from exceptions import NotFoundError
 from db.crud.crud import TrainingPlanCRUD
-from schemas.training_plan import TrainingPlan
+from schemas.training_plan import TrainingPlan, TrainingPlanIn
 
 
-async def create(plan_data: dict, user_id: int, session: AsyncSession):
+async def create(plan_data: TrainingPlanIn, user_id: int, session: AsyncSession):
     try:
-        plan = await TrainingPlanCRUD.create_for_user(user_id, session=session, **plan_data)
+        plan = await TrainingPlanCRUD.create_for_user(user_id, plan_data, session=session)
         await session.commit()
         return plan
     except IntegrityError as e:
@@ -20,4 +20,5 @@ async def get_user_plan(user_id: int, session: AsyncSession):
     plan = await TrainingPlanCRUD.get_by_user_id(user_id, session=session)
     if plan is None:
         raise NotFoundError(f'No training plan for user with this ID: {user_id}')
-    return TrainingPlan.model_validate(plan)
+    plan = TrainingPlan.model_validate(plan)
+    return plan

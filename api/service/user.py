@@ -6,9 +6,10 @@ from schemas.utils import models_validate
 from exceptions import AlreadyExistError, NotFoundError
 
 
-async def create(user_data: dict, session: AsyncSession):
+async def create(user_data: User, session: AsyncSession):
     try:
-        user = await UserCRUD.create(session=session, **user_data)
+        user = await UserCRUD.create(user_data, session=session)
+        user = User.model_validate(user)
         await session.commit()
         return user
     except IntegrityError as e:
@@ -29,6 +30,7 @@ async def get_all(session: AsyncSession):
 
 async def get_by_id(id: int, session: AsyncSession) -> User:
     user = await UserCRUD.get_by_id(id=id, session=session)
+    user = User.model_validate(user)
     if user is None:
         raise NotFoundError("There is no user with such ID.")
-    return User.model_validate(user)
+    return user

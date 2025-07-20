@@ -6,11 +6,12 @@ from schemas.activity_level import ActivityLevel
 from schemas.utils import models_validate
 
 
-async def create(level_data: dict, session: AsyncSession):
+async def create(level_data: ActivityLevel, session: AsyncSession):
     """Create new activity level"""
     try:
-        level = await ActivityLevelCRUD.create(session=session, **level_data)
+        level = await ActivityLevelCRUD.create(level_data, session=session)
         await session.commit()
+        level = ActivityLevel.model_validate(level)
         return level
     except IntegrityError as e:
         await session.rollback()

@@ -18,7 +18,7 @@ async def create_user_plan(plan_data: TrainingPlanIn,
                            id: int,
                            session: AsyncSession = Depends(get_db_session)):
     """Create training plan for the user with provided ID."""
-    return await service.create(plan_data.model_dump(), user_id=id, session=session)
+    return await service.create(plan_data, user_id=id, session=session)
 
 @router.get('/get/user={id}')
 async def get_user_plan(id: int,

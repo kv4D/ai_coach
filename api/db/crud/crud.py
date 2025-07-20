@@ -1,6 +1,6 @@
-from typing import Self
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel as PydanticModel
 from .base import BaseCRUD
 from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
@@ -31,7 +31,10 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         return entry
     
     @classmethod
-    async def create_for_user(cls, user_id: int, session: AsyncSession, **plan_data) -> TrainingPlanModel:
+    async def create_for_user(cls, 
+                              user_id: int, 
+                              plan_data: PydanticModel, 
+                              session: AsyncSession) -> TrainingPlanModel:
         """Create a training plan for the user by their id.
 
         Args:
@@ -41,7 +44,8 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         Returns:
             None | TrainingPlanModel: entry or None
         """
-        instance = cls._model(**plan_data, user_id=user_id)
+        plan_data_dict = plan_data.model_dump()
+        instance = cls._model(**plan_data_dict, user_id=user_id)
         session.add(instance=instance)
         await session.flush()
         return instance
