@@ -2,17 +2,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from exceptions import AlreadyExistError, NotFoundError
 from db.crud.crud import ActivityLevelCRUD
-from schemas.activity_level import ActivityLevel
+from schemas.activity_level import ActivityLevel, ActivityLevelInput
 from schemas.utils import models_validate
 
 
-async def create(level_data: ActivityLevel, session: AsyncSession):
+async def create(level_data: ActivityLevelInput, session: AsyncSession):
     """Create new activity level"""
     try:
         level = await ActivityLevelCRUD.create(level_data, session=session)
         await session.commit()
-        level = ActivityLevel.model_validate(level)
-        return level
+        return ActivityLevel.model_validate(level)
     except IntegrityError as e:
         await session.rollback()
         error_message = str(e).lower()
@@ -29,7 +28,6 @@ async def get_info_by_level(level: int, session: AsyncSession):
 async def get_all_levels(session: AsyncSession):
     """Get all 'level' fields of activity levels in the database."""
     levels = await ActivityLevelCRUD.get_all(session=session)
-    levels = models_validate(ActivityLevel, levels)
     if levels is None:
         raise NotFoundError("There are no levels yet.")
-    return levels
+    return models_validate(ActivityLevel, levels)

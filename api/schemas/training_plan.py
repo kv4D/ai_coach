@@ -6,7 +6,6 @@ class TrainingPlan(BaseModel):
     Training plan model.
     Used to contain training plan for a user for
     every day of the week.
-    
     """
     id: int = Field(frozen=True)
     user_id: int
@@ -14,14 +13,13 @@ class TrainingPlan(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
-class TrainingPlanIn(BaseModel):
+class TrainingPlanInput(BaseModel):
     """
-    Training plan model for input.
-    Used to contain training plan for a user for
-    every day of the week.
+    Training plan model for database input.
+    Use to create database entries.
     """
     plan_description: str
+    user_id: int
 
     model_config = ConfigDict(from_attributes=True)
     @field_validator('plan_description')

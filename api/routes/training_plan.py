@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.training_plan import TrainingPlan, TrainingPlanIn
+from schemas.training_plan import TrainingPlan, TrainingPlanInput
 from db.database import get_db_session
 from service import training_plan as service
 
@@ -13,12 +13,11 @@ def ping() -> str:
     """Test endpoint"""
     return 'Hello, User'
 
-@router.post('/post/user={id}')
-async def create_user_plan(plan_data: TrainingPlanIn,
-                           id: int,
+@router.post('/create')
+async def create_user_plan(plan_data: TrainingPlanInput,
                            session: AsyncSession = Depends(get_db_session)):
     """Create training plan for the user with provided ID."""
-    return await service.create(plan_data, user_id=id, session=session)
+    return await service.create(plan_data, session=session)
 
 @router.get('/get/user={id}')
 async def get_user_plan(id: int,

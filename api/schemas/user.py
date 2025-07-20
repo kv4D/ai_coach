@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, \
     field_validator, Field
-
+from schemas.activity_level import ActivityLevel
+from schemas.training_plan import TrainingPlan
 
 class User(BaseModel):
     """
@@ -13,9 +14,23 @@ class User(BaseModel):
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
-    activity_level_id: int
+    activity_level: ActivityLevel
+    training_plan: TrainingPlan
     
     model_config = ConfigDict(from_attributes=True)
+
+class UserInput(BaseModel):
+    """
+    User model for database input.
+    Use to create database entries.
+    """
+    id: int = Field(frozen=True)
+    username: str = Field(default='Anon')
+    age: int = Field(gt=0, lt=100)
+    weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
+    height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
+    gender: str
+    activity_level_id: int
 
     @field_validator('gender')
     @classmethod

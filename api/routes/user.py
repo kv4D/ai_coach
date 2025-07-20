@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.user import User
+from schemas.user import User, UserInput
 from db.database import get_db_session
 from service import user as service
 
@@ -14,7 +14,7 @@ def ping() -> str:
     return 'Hello, User'
 
 @router.post('/create')
-async def create_user(user_data: User,
+async def create_user(user_data: UserInput,
                       session: AsyncSession = Depends(get_db_session)):
     """Create new user"""
     user = await service.create(user_data, session=session)

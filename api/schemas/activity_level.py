@@ -1,14 +1,23 @@
 from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional
 
 
 class ActivityLevel(BaseModel):
     """
     Activity level model.
-    Used to define different activity levels of users.
     """
-    id: int = Field(frozen=True)
-    description: str
+    id: int = Field(description='Database ID')
+    description: str = Field(description='About this activity level')
     name: str
-    level: int = Field(ge=0)
+    level: int = Field(ge=0, description='Activity level number')
 
     model_config = ConfigDict(from_attributes=True)
+
+class ActivityLevelInput(BaseModel):
+    """
+    Activity level model for input.
+    Use to create database entries.
+    """
+    description: str = Field(description='About this activity level')
+    name: str
+    level: int = Field(ge=0, description='Activity level number')

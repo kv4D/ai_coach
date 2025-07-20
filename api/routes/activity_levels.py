@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.activity_level import ActivityLevel
+from schemas.activity_level import ActivityLevel, ActivityLevelInput
 from db.database import get_db_session
 from service import activity_level as service
 
@@ -14,7 +14,7 @@ def ping() -> str:
     return 'Hello, User'
 
 @router.post('/create')
-async def create_activity_level(level_data: ActivityLevel,
+async def create_activity_level(level_data: ActivityLevelInput,
                                session: AsyncSession = Depends(get_db_session)):
     """Create new activity level"""
     return await service.create(level_data, session=session)

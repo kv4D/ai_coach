@@ -1,17 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from db.crud.crud import UserCRUD
-from schemas.user import User
+from schemas.user import User, UserInput
 from schemas.utils import models_validate
 from exceptions import AlreadyExistError, NotFoundError
 
 
-async def create(user_data: User, session: AsyncSession):
+async def create(user_data: UserInput, session: AsyncSession):
     try:
         user = await UserCRUD.create(user_data, session=session)
-        user = User.model_validate(user)
         await session.commit()
-        return user
+        return User.model_validate(user)
     except IntegrityError as e:
         await session.rollback()
         error_message = str(e).lower()
@@ -23,14 +22,12 @@ async def create(user_data: User, session: AsyncSession):
 
 async def get_all(session: AsyncSession):
     users = await UserCRUD.get_all(session=session)
-    users = models_validate(User, users)
     if users is None:
         raise NotFoundError('There are no users yet.')
-    return users
+    return models_validate(User, users)
 
-async def get_by_id(id: int, session: AsyncSession) -> User:
+async def get_by_id(id: int, session: AsyncSession):
     user = await UserCRUD.get_by_id(id=id, session=session)
-    user = User.model_validate(user)
     if user is None:
         raise NotFoundError("There is no user with such ID.")
-    return user
+    return User.model_validate(user)
