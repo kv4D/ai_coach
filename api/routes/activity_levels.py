@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
 from db.database import get_db_session
@@ -31,3 +32,10 @@ async def update_activity_level(id: int,
                                 session: AsyncSession = Depends(get_db_session)):
     level = await service.update(id, level_data, session=session)
     return level
+
+@router.delete('delete/{id}')
+async def delete_level(id: int,
+                       session: AsyncSession = Depends(get_db_session)):
+    await service.delete(id, session=session)
+    return JSONResponse(status_code=200, 
+                        content={"message": f"Activity level with ID={id} was deleted"})

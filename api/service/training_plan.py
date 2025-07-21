@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from exceptions import NotFoundError
 from db.crud.crud import TrainingPlanCRUD
-from schemas.training_plan import TrainingPlan, TrainingPlanInput
+from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
 
 
 async def create(user_id: int, 
@@ -26,3 +26,21 @@ async def get_user_plan(user_id: int, session: AsyncSession):
         raise NotFoundError(f'No training plan for user with this ID: {user_id}')
     plan = TrainingPlan.model_validate(plan)
     return plan
+
+async def update_user_plan(user_id: int, 
+                           plan_data: TrainingPlanUpdate, 
+                           session: AsyncSession):
+    try:
+        await TrainingPlanCRUD.update_by_user_id(user_id, plan_data, session=session)
+        await session.commit()
+    except NotFoundError:
+        await session.rollback()
+        raise
+
+async def delete(id: int, session: AsyncSession):
+    try:
+        await TrainingPlanCRUD.delete_by_id(id, session=session)
+        await session.commit()
+    except NotFoundError:
+        await session.rollback()
+        raise

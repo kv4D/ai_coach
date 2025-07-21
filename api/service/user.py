@@ -24,7 +24,7 @@ async def get_all(session: AsyncSession):
     users = await UserCRUD.get_all(session=session)
     if users is None:
         raise NotFoundError('There are no users yet.')
-    return models_validate(User, users)
+    return users
 
 async def get_by_id(id: int, session: AsyncSession):
     user = await UserCRUD.get_by_id(id, session=session)
@@ -46,9 +46,8 @@ async def update(id: int,
 async def delete(id: int,
                  session: AsyncSession):
     try:
-        user = await UserCRUD.delete_by_id(id, session=session)
+        await UserCRUD.delete_by_id(id, session=session)
         await session.commit()
-        return User.model_validate(user)
     except NotFoundError:
         await session.rollback()
         raise

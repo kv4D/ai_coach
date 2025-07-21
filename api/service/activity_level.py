@@ -42,3 +42,12 @@ async def update(id: int,
     except NotFoundError:
         await session.rollback()
         raise
+
+async def delete(id: int,
+                 session: AsyncSession):
+    try:
+        await ActivityLevelCRUD.delete_by_id(id, session=session)
+        await session.commit()
+    except NotFoundError:
+        await session.rollback()
+        raise
