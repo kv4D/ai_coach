@@ -1,6 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel as PydanticModel
+
+from exceptions import AlreadyExistError, NotFoundError
 from .base import BaseCRUD
 from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
@@ -44,6 +46,14 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         Returns:
             None | TrainingPlanModel: entry or None
         """
+        # check for existing plan
+        result = await session.execute(select(cls._model).filter_by(user_id=user_id))
+        exists = result.scalar_one_or_none()
+        if exists:
+            raise AlreadyExistError(f"User with ID={user_id} already has a plan.")
+        # there can be only one entry or none
+        entry = result.scalar_one_or_none()
+        
         plan_data_dict = plan_data.model_dump()
         instance = cls._model(**plan_data_dict, user_id=user_id)
         session.add(instance=instance)

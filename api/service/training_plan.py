@@ -5,9 +5,13 @@ from db.crud.crud import TrainingPlanCRUD
 from schemas.training_plan import TrainingPlan, TrainingPlanInput
 
 
-async def create(plan_data: TrainingPlanInput, session: AsyncSession):
+async def create(user_id: int, 
+                 plan_data: TrainingPlanInput, 
+                 session: AsyncSession):
     try:
-        plan = await TrainingPlanCRUD.create(plan_data, session=session)
+        plan = await TrainingPlanCRUD.create_for_user(user_id, 
+                                                      plan_data, 
+                                                      session=session)
         await session.commit()
         return TrainingPlan.model_validate(plan)
     except IntegrityError as e:

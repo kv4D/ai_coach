@@ -47,7 +47,6 @@ class TrainingPlanInput(BaseModel, TrainingPlanValidationMixin):
     Use to create database entries.
     """
     plan_description: str
-    user_id: int
 
 class TrainingPlanUpdate(BaseModel, TrainingPlanValidationMixin):
     """

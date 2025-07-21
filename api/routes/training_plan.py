@@ -13,13 +13,14 @@ def ping() -> str:
     """Test endpoint"""
     return 'Hello, User'
 
-@router.post('/create')
-async def create_user_plan(plan_data: TrainingPlanInput,
+@router.post('/create/user/{user_id}')
+async def create_user_plan(user_id: int,
+                           plan_data: TrainingPlanInput,
                            session: AsyncSession = Depends(get_db_session)):
     """Create training plan for the user with provided ID."""
-    return await service.create(plan_data, session=session)
+    return await service.create(user_id, plan_data, session=session)
 
-@router.get('/get/user={id}')
+@router.get('/get/user/{user_id}')
 async def get_user_plan(id: int,
                         session: AsyncSession = Depends(get_db_session)) -> TrainingPlan | dict:
     """Get user's training plan by their id.
