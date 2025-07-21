@@ -27,7 +27,7 @@ class User(BaseModel):
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
     activity_level: ActivityLevel
-    training_plan: TrainingPlan
+    training_plan: Optional[TrainingPlan]
     
     model_config = ConfigDict(from_attributes=True)
 
