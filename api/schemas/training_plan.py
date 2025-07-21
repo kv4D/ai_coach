@@ -1,5 +1,33 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+
+class TrainingPlanValidationMixin:
+    @field_validator('plan_description')
+    @classmethod
+    def check_plan_description(cls, text: str) -> str:
+        """Validated plan description.
+
+        Args:
+            text (str): plan description text
+
+        Returns:
+            str: plan description checked
+        """
+        days = [
+            'понедельник',
+            'вторник',
+            'среда',
+            'четверг',
+            'пятница',
+            'суббота',
+            'воскресенье'
+        ]
+
+        missing = [day for day in days if day not in text.lower()]
+        if missing:
+            raise ValueError(f"Some days are not in the plan: {', '.join(missing)}")
+        return text
 
 class TrainingPlan(BaseModel):
     """
@@ -13,7 +41,7 @@ class TrainingPlan(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class TrainingPlanInput(BaseModel):
+class TrainingPlanInput(BaseModel, TrainingPlanValidationMixin):
     """
     Training plan model for database input.
     Use to create database entries.
@@ -21,21 +49,9 @@ class TrainingPlanInput(BaseModel):
     plan_description: str
     user_id: int
 
-    model_config = ConfigDict(from_attributes=True)
-    @field_validator('plan_description')
-    @classmethod
-    def check_plan_description(cls, text: str) -> str:
-        days = [
-            'понедельник',
-            'вторник',
-            'среда',
-            'четверг',
-            'пятница',
-            'суббота',
-            'воскресенье'
-        ]
-        
-        missing = [day for day in days if day not in text.lower()]
-        if missing:
-            raise ValueError(f"Some days are not in the plan: {', '.join(missing)}")
-        return text
+class TrainingPlanUpdate(BaseModel, TrainingPlanValidationMixin):
+    """
+    Training plan model for database update.
+    Use to update database entries.
+    """
+    plan_description: Optional[str] = None
