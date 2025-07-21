@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.user import User, UserInput, UserUpdate
 from db.database import get_db_session
@@ -39,3 +40,10 @@ async def update_user(id: int,
                       session: AsyncSession = Depends(get_db_session)):
     user = await service.update(id, user_data, session)
     return user
+
+@router.delete('delete/{id}')
+async def delete_user(id: int,
+                      session: AsyncSession = Depends(get_db_session)):
+    await service.delete(id, session=session)
+    return JSONResponse(status_code=200, 
+                        content={"message": "User with ID={id} was deleted"})

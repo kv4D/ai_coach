@@ -19,6 +19,7 @@ class UserModel(BaseModel):
     activity_level_id: Mapped[int] = mapped_column(ForeignKey('activity_levels.id'))
     activity_level: Mapped['ActivityLevelModel'] = relationship("ActivityLevelModel",
                                                                 back_populates="users",
+                                                                # load with user
                                                                 lazy='joined')
     
     # connect to training plan

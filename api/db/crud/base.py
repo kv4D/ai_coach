@@ -50,7 +50,7 @@ class BaseCRUD(Generic[TDBModel]):
         return entries
 
     @classmethod
-    async def get_by_id(cls, id: int, session: AsyncSession) -> None | TDBModel:
+    async def get_by_id(cls, entry_id: int, session: AsyncSession) -> None | TDBModel:
         """Get a model entry by id.
 
         Args:
@@ -60,18 +60,30 @@ class BaseCRUD(Generic[TDBModel]):
         Returns:
             None | TDBModel: entry or None
         """
-        return await session.get(cls._model, id)
+        return await session.get(cls._model, entry_id)
 
     @classmethod
-    async def update_by_id(cls, id: int, update_data: PydanticModel, session: AsyncSession):
+    async def update_by_id(cls, entry_id: int, update_data: PydanticModel, session: AsyncSession):
         update_data_dict = update_data.model_dump(exclude_unset=True)
-        entry = await session.get(cls._model, id)
+        entry = await session.get(cls._model, entry_id)
         
         if entry is None:
             raise NotFoundError(
-                f"There is no {cls._model.__name__.lower()} entry with such ID: {id}.")
+                f"There is no {cls._model.__name__.lower()} entry with such ID: {entry_id}.")
         
         for key, value in update_data_dict.items():
             setattr(entry, key, value)
+        await session.flush()
+        return entry
+
+    @classmethod
+    async def delete_by_id(cls, entry_id: int, session: AsyncSession):
+        entry = await session.get(cls._model, entry_id)
+
+        if entry is None:
+            raise NotFoundError(
+                f"There is no {cls._model.__name__.lower()} entry with such ID: {entry_id}.")
+
+        await session.delete(entry)
         await session.flush()
         return entry

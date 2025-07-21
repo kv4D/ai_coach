@@ -27,7 +27,7 @@ async def get_all(session: AsyncSession):
     return models_validate(User, users)
 
 async def get_by_id(id: int, session: AsyncSession):
-    user = await UserCRUD.get_by_id(id=id, session=session)
+    user = await UserCRUD.get_by_id(id, session=session)
     if user is None:
         raise NotFoundError("There is no user with such ID.")
     return User.model_validate(user)
@@ -37,6 +37,16 @@ async def update(id: int,
                  session: AsyncSession):
     try:
         user = await UserCRUD.update_by_id(id, user_data, session=session)
+        await session.commit()
+        return User.model_validate(user)
+    except NotFoundError:
+        await session.rollback()
+        raise
+
+async def delete(id: int,
+                 session: AsyncSession):
+    try:
+        user = await UserCRUD.delete_by_id(id, session=session)
         await session.commit()
         return User.model_validate(user)
     except NotFoundError:
