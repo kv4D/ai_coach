@@ -46,4 +46,4 @@ async def delete_user(id: int,
                       session: AsyncSession = Depends(get_db_session)):
     await service.delete(id, session=session)
     return JSONResponse(status_code=200, 
-                        content={"message": "User with ID={id} was deleted"})
+                        content={"message": f"User with ID={id} was deleted"})

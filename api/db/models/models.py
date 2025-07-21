@@ -29,7 +29,8 @@ class UserModel(BaseModel):
                                                               # one-to-one
                                                               uselist=False,
                                                               # load with user
-                                                              lazy="joined") 
+                                                              lazy="joined",
+                                                              cascade="all, delete-orphan") 
 
 
 class ActivityLevelModel(BaseModel):
@@ -57,5 +58,4 @@ class TrainingPlanModel(BaseModel):
                                              back_populates="training_plan",
                                              # one-to-one
                                              uselist=False,
-                                             cascade="all, delete-orphan",
                                              single_parent=True)
