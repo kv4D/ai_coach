@@ -7,6 +7,12 @@ from routes import user, activity_levels, training_plan
 
 app = FastAPI()
 
+
+@app.get('')
+def ping() -> str:
+    """Test endpoint"""
+    return 'Hello, User'
+
 # include exception handlers here
 @app.exception_handler(NotFoundError)
 async def not_found_error_handler(request: Request, 

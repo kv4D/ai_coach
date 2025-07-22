@@ -12,9 +12,10 @@ async def main():
     Start the bot
     """
     bot = Bot(token=config.TG_BOT_TOKEN)
-    # redis = Redis(host=config.DB_HOST)
-    # storage = RedisStorage(redis=redis)
-    dispatcher = Dispatcher(storage=None)
+    redis = Redis(host=config.DB_HOST,
+                  port=config.TG_BOT_STORAGE_PORT)
+    storage = RedisStorage(redis=redis)
+    dispatcher = Dispatcher(storage=storage)
     
     # include routers here
     dispatcher.include_routers(start_router)

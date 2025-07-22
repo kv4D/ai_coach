@@ -9,11 +9,6 @@ from service import user as service
 router = APIRouter(prefix=f"/user")
 
 
-@router.get('')
-def ping() -> str:
-    """Test endpoint"""
-    return 'Hello, User'
-
 @router.post('/create')
 async def create_user(user_data: UserInput,
                       session: AsyncSession = Depends(get_db_session)):

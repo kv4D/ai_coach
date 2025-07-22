@@ -9,11 +9,6 @@ from service import training_plan as service
 router = APIRouter(prefix=f"/plan")
 
 
-@router.get('')
-def ping() -> str:
-    """Test endpoint"""
-    return 'Hello, User'
-
 @router.post('/create/user/{user_id}')
 async def create_user_plan(user_id: int,
                            plan_data: TrainingPlanInput,
@@ -38,6 +33,6 @@ async def get_user_plan(user_id: int,
 @router.delete('/delete/user/{user_id}')
 async def delete_plan_by_user_id(user_id: int,
                                  session: AsyncSession = Depends(get_db_session)):
-    await service.delete_user_plan(user_id, session)
+    await service.delete(user_id, session)
     return JSONResponse(status_code=200,
                         content={'message': f'Training plan of user with ID={user_id} was deleted.'})

@@ -9,11 +9,6 @@ from service import activity_level as service
 router = APIRouter(prefix=f"/level")
 
 
-@router.get('')
-def ping() -> str:
-    """Test endpoint"""
-    return 'Hello, User'
-
 @router.post('/create')
 async def create_activity_level(level_data: ActivityLevelInput,
                                session: AsyncSession = Depends(get_db_session)):
