@@ -4,6 +4,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
+from service.api import create_user
 from states.create_profile import CreateProfile
 from keyboards.start import get_gender_kb, get_activity_level_kb
 
@@ -112,5 +113,6 @@ async def process_goal(message: Message, state: FSMContext):
     # it is worth to check if user already in DB
     # probably we can delete them and create again
     user_data = await state.get_data()
+    print(create_user(user_data))
     await state.clear()
     

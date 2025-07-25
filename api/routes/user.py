@@ -36,7 +36,7 @@ async def update_user(id: int,
     user = await service.update(id, user_data, session)
     return user
 
-@router.delete('delete/{id}')
+@router.delete('/delete/{id}')
 async def delete_user(id: int,
                       session: AsyncSession = Depends(get_db_session)):
     await service.delete(id, session=session)

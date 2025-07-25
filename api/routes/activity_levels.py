@@ -21,14 +21,14 @@ async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[Activ
     levels = await service.get_all_levels(session=session)
     return levels
 
-@router.patch('update/{id}')
+@router.patch('/update/{id}')
 async def update_activity_level(id: int,
                                 level_data: ActivityLevelUpdate,
                                 session: AsyncSession = Depends(get_db_session)):
     level = await service.update(id, level_data, session=session)
     return level
 
-@router.delete('delete/{id}')
+@router.delete('/delete/{id}')
 async def delete_level(id: int,
                        session: AsyncSession = Depends(get_db_session)):
     await service.delete(id, session=session)
