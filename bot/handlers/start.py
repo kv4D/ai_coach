@@ -4,7 +4,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
-from service.api import create_user
+from service.api import create_user, get_activity_levels, get_activity_levels_descriptions
 from states.create_profile import CreateProfile
 from keyboards.start import get_gender_kb, get_activity_level_kb
 
@@ -22,7 +22,8 @@ async def handle_start_command(message: Message, state: FSMContext):
 @router.message(F.text, CreateProfile.sending_name)
 async def process_name(message: Message, state: FSMContext):
     await state.update_data(username=message.text)
-    await message.answer(f'Теперь введи свой <b>возраст</b>')
+    await message.answer(f'Теперь введи свой <b>возраст</b>',
+                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(CreateProfile.sending_age)
 
 
@@ -30,7 +31,8 @@ async def process_name(message: Message, state: FSMContext):
 async def process_age(message: Message, state: FSMContext):
     age = message.text
     # some other checks
-    await message.answer(f'Укажи свой <b>пол</b>', reply_markup=get_gender_kb())
+    await message.answer(f'Укажи свой <b>пол</b>', 
+                         reply_markup=get_gender_kb())
     await state.update_data(age=int(age))
     await state.set_state(CreateProfile.sending_gender)
 
@@ -52,7 +54,8 @@ async def process_gender(message: Message, state: FSMContext):
 async def process_height(message: Message, state: FSMContext):
     height = message.text
     # some checks
-    await message.answer('Укажи свой <b>вес в килограммах</b>')
+    await message.answer('Укажи свой <b>вес в килограммах</b>',
+                         reply_markup=ReplyKeyboardRemove())
     await state.update_data(height_cm=float(height.replace(',','.')))
     await state.set_state(CreateProfile.sending_weight)
 
@@ -61,25 +64,20 @@ async def process_height(message: Message, state: FSMContext):
 async def process_weight(message: Message, state: FSMContext):
     weight = message.text
     # some checks
-    # simulation
-    # TODO: change later with API
-    level_descriptions = [
-        ('1', 'Сидячий'),
-        ('2', 'Малоподвижный'),
-        ('3', 'Активный'),
-        ('4', 'Спортивный'),
-        ('5', 'Божественный')
-    ]
+    levels = get_activity_levels()
+    descriptions = get_activity_levels_descriptions()
     
-    level_descriptions = [
-        f"<b>Уровень {i[0]}</b>:\n{i[1]}\n\n" for i in level_descriptions
+    levels_descriptions = [
+        f"Уровень {level}:\n{descriptions[level]}\n\n" for level in levels
         ]
 
     await state.update_data(weight_kg=float(weight.replace(',','.')))
     
-    content = as_marked_list(*level_descriptions, marker="🏆 ") 
-    await message.answer('Выбери свой <b>уровень активности</b>')
-    await message.answer(**content.as_kwargs(), reply_markup=get_activity_level_kb())
+    content = as_marked_list(*levels_descriptions, marker="🏆 ") 
+    await message.answer('Выбери свой <b>уровень активности</b>',
+                         reply_markup=ReplyKeyboardRemove())
+    await message.answer(**content.as_kwargs(), 
+                         reply_markup=get_activity_level_kb())
     await state.set_state(CreateProfile.sending_activity_level)
 
 
@@ -99,11 +97,11 @@ async def process_activity_level(message: Message, state: FSMContext):
 async def process_goal(message: Message, state: FSMContext):
     await state.update_data(goal=message.text)
     await message.answer(f'Начало положено!\nМы собрали всю информацию и готовы к работе.'
-                         f'\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок')
+                         f'\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
+                         reply_markup=ReplyKeyboardRemove())
     # it is worth to check if user already in DB
     # probably we can delete them and create again
     user_data = await state.get_data()
     user_data['id'] = message.from_user.id
-    print(user_data)
-    print(create_user(user_data))
+    create_user(user_data)
     await state.clear()

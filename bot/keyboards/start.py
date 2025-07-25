@@ -1,6 +1,8 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types.keyboard_button import KeyboardButton
 
+from service.api import get_activity_levels
+
 
 def get_gender_kb():
     builder = ReplyKeyboardBuilder()
@@ -15,7 +17,7 @@ def get_gender_kb():
 def get_activity_level_kb():
     builder = ReplyKeyboardBuilder()
     # extract service data here
-    levels = [1, 2, 3, 4, 5]
+    levels = get_activity_levels()
     for level in levels:
         builder.button(text=str(level))
     builder.adjust(len(levels))
