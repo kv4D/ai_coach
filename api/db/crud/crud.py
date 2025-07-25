@@ -116,4 +116,8 @@ class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
         
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
+        
+        if entry is None:
+            raise NotFoundError(f"There is no level with such number: {level}.")
+        
         return entry

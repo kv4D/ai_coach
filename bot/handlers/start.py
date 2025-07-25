@@ -37,7 +37,6 @@ async def process_age(message: Message, state: FSMContext):
 @router.message(F.text, CreateProfile.sending_gender)
 async def process_gender(message: Message, state: FSMContext):
     gender = message.text
-    print(gender)
     if gender is None:
         await message.answer('Пожалуйста, укажи свой пол')
         return
@@ -113,6 +112,7 @@ async def process_goal(message: Message, state: FSMContext):
     # it is worth to check if user already in DB
     # probably we can delete them and create again
     user_data = await state.get_data()
+    print(user_data)
     print(create_user(user_data))
     await state.clear()
     
