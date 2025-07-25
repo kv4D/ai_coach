@@ -26,6 +26,7 @@ class User(BaseModel):
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
+    goal: Optional[str] = None
     activity_level: ActivityLevel
     training_plan: Optional[TrainingPlan]
     
@@ -42,6 +43,7 @@ class UserInput(BaseModel, UserValidationMixin):
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
+    goal: Optional[str] = None
     activity_level_id: int
 
 class UserUpdate(BaseModel, UserValidationMixin):
@@ -54,3 +56,4 @@ class UserUpdate(BaseModel, UserValidationMixin):
     weight_kg: Optional[float] = Field(default=None, gt=0.0, lt=500.0)
     height_cm: Optional[float] = Field(default=None, gt=60.0, lt= 250.0)
     gender: Optional[str] = None
+    goal: Optional[str] = None
