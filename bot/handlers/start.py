@@ -1,4 +1,3 @@
-import asyncio
 from aiogram import Router, F, Bot
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
@@ -8,9 +7,11 @@ from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
 from service.api import create_user, get_activity_levels, get_activity_levels_descriptions
 from states.create_profile import CreateProfile
+from states.main import Main
 from validators.user import validate_activity_level, validate_age, \
     validate_gender, validate_height, validate_weight
 from keyboards.start import get_gender_kb, get_activity_level_kb
+
 
 router = Router()
 
@@ -119,7 +120,6 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
                 f"Уровень {level}:\n{descriptions[level]}\n\n" for level in levels
                 ]
 
-            await asyncio.sleep(2)
             await state.update_data(weight_kg=weight)
             
             content = as_marked_list(*levels_descriptions, marker="🏆 ") 
@@ -158,7 +158,7 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
     """Process user's goal.
     User has finished collecting all the data.
     Create user in the API's database OR update existing user.
-    Clear the state.
+    Clear the state, set 'Main' state.
 
     Args:
         message (Message): Message object
@@ -171,7 +171,8 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
                          reply_markup=ReplyKeyboardRemove())
     user_data = await state.get_data()
     user_data['id'] = message.from_user.id
-    
+
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         await create_user(user_data)
     await state.clear()
+    await state.set_state(Main.main_menu)
