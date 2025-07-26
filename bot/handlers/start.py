@@ -20,7 +20,7 @@ router = Router()
 
 @router.message(CommandStart())
 async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
-    """Handle start command.
+    """Handle /start command.
     User starts the bot by sending the /start command.
     Start collecting user's data.
 
