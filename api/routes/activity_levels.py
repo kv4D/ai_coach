@@ -21,6 +21,12 @@ async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[Activ
     levels = await service.get_all_levels(session=session)
     return levels
 
+@router.get('/get/{level}')
+async def get_by_level(level: int,
+                       session: AsyncSession = Depends(get_db_session)):
+    """Get activity level data by it's activity level number."""
+    return await service.get_by_level(level, session=session)
+
 @router.patch('/update/{level_id}')
 async def update_activity_level(level_id: int,
                                 level_data: ActivityLevelUpdate,
