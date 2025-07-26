@@ -12,6 +12,7 @@ from states.main import Main
 from validators.user import validate_activity_level, validate_age, \
     validate_gender, validate_height, validate_weight
 from keyboards.start import get_gender_kb, get_activity_level_kb
+from keyboards.menu_buttons import set_main_menu
 
 
 router = Router()
@@ -178,4 +179,5 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         await create_user(user_data)
     await state.clear()
+    await set_main_menu(bot)
     await state.set_state(Main.main_menu)
