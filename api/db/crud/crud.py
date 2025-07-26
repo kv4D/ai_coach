@@ -13,7 +13,7 @@ class UserCRUD(BaseCRUD[UserModel]):
 
 class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     _model = TrainingPlanModel
-    
+
     @classmethod
     async def get_by_user_id(cls, user_id: int, session: AsyncSession) -> None | TrainingPlanModel:
         """Get the training plan for a user by their id.
@@ -27,15 +27,15 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         """
         query = select(cls._model).filter_by(user_id=user_id)
         result = await session.execute(query)
-        
+
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
         return entry
-    
+
     @classmethod
-    async def create_for_user(cls, 
-                              user_id: int, 
-                              plan_data: PydanticModel, 
+    async def create_for_user(cls,
+                              user_id: int,
+                              plan_data: PydanticModel,
                               session: AsyncSession) -> TrainingPlanModel:
         """Create a training plan for the user by their id.
 
@@ -51,7 +51,7 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         exists = result.scalar_one_or_none()
         if exists:
             raise AlreadyExistError(f"User with ID={user_id} already has a plan.")
-        
+
         plan_data_dict = plan_data.model_dump()
         instance = cls._model(**plan_data_dict, user_id=user_id)
         session.add(instance=instance)
@@ -64,17 +64,17 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
                                 plan_data: TrainingPlanUpdate,
                                 session: AsyncSession):
         update_data_dict = plan_data.model_dump(exclude_unset=True)
-        
+
         query = select(cls._model).filter_by(user_id=user_id)
         result = await session.execute(query)
-        
+
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
-        
+
         if entry is None:
             raise NotFoundError(
                 f"There is no plan for user with such ID: {user_id}.")
-        
+
         for key, value in update_data_dict.items():
             setattr(entry, key, value)
         await session.flush()
@@ -99,7 +99,7 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
 
 class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
     _model = ActivityLevelModel
-    
+
     @classmethod
     async def get_by_level(cls, level: int, session: AsyncSession) -> None | ActivityLevelModel:
         """Get the activity level info according to its level.
@@ -113,7 +113,11 @@ class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
         """
         query = select(cls._model).filter_by(level=level)
         result = await session.execute(query)
-        
+
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
+
+        if entry is None:
+            raise NotFoundError(f"There is no level with such number: {level}.")
+
         return entry

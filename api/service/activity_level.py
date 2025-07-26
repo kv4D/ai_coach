@@ -16,7 +16,7 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession):
         await session.rollback()
         error_message = str(e).lower()
         if 'unique' in error_message:
-            raise AlreadyExistError(f'There is already an activity level with such ID.')
+            raise AlreadyExistError('There is already an activity level with such ID.') from e
 
 async def get_info_by_level(level: int, session: AsyncSession):
     """Get info about the level in the database by its value."""
@@ -32,21 +32,21 @@ async def get_all_levels(session: AsyncSession):
         raise NotFoundError("There are no levels yet.")
     return models_validate(ActivityLevel, levels)
 
-async def update(id: int, 
-                 level_data: ActivityLevelUpdate, 
+async def update(level_id: int, 
+                 level_data: ActivityLevelUpdate,
                  session: AsyncSession):
     try:
-        level = await ActivityLevelCRUD.update_by_id(id, level_data, session=session)
+        level = await ActivityLevelCRUD.update_by_id(level_id, level_data, session=session)
         await session.commit()
         return ActivityLevel.model_validate(level)
     except NotFoundError:
         await session.rollback()
         raise
 
-async def delete(id: int,
+async def delete(level_id: int,
                  session: AsyncSession):
     try:
-        await ActivityLevelCRUD.delete_by_id(id, session=session)
+        await ActivityLevelCRUD.delete_by_id(level_id, session=session)
         await session.commit()
     except NotFoundError:
         await session.rollback()

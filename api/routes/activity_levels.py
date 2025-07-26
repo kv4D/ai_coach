@@ -6,7 +6,7 @@ from db.database import get_db_session
 from service import activity_level as service
 
 
-router = APIRouter(prefix=f"/level")
+router = APIRouter(prefix="/level")
 
 
 @router.post('/create')
@@ -21,16 +21,16 @@ async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[Activ
     levels = await service.get_all_levels(session=session)
     return levels
 
-@router.patch('update/{id}')
-async def update_activity_level(id: int,
+@router.patch('/update/{level_id}')
+async def update_activity_level(level_id: int,
                                 level_data: ActivityLevelUpdate,
                                 session: AsyncSession = Depends(get_db_session)):
-    level = await service.update(id, level_data, session=session)
+    level = await service.update(level_id, level_data, session=session)
     return level
 
-@router.delete('delete/{id}')
-async def delete_level(id: int,
+@router.delete('/delete/{level_id}')
+async def delete_level(level_id: int,
                        session: AsyncSession = Depends(get_db_session)):
-    await service.delete(id, session=session)
+    await service.delete(level_id, session=session)
     return JSONResponse(status_code=200, 
-                        content={"message": f"Activity level with ID={id} was deleted"})
+                        content={"message": f"Activity level with ID={level_id} was deleted"})
