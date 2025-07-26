@@ -14,10 +14,10 @@ def get_gender_kb():
                                  input_field_placeholder="Нажми на кнопку для выбора")
     return keyboard
 
-def get_activity_level_kb():
+async def get_activity_level_kb():
     builder = ReplyKeyboardBuilder()
     # extract service data here
-    levels = get_activity_levels()
+    levels = await get_activity_levels()
     for level in levels:
         builder.button(text=str(level))
     builder.adjust(len(levels))

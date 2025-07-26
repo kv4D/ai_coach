@@ -1,7 +1,7 @@
 import aiohttp
 
 
-API_URL = 'http://localhost:8000/'
+API_URL = 'http://localhost:8000'
 
 
 async def create_user(user_data: dict):

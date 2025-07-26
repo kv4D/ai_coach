@@ -1,4 +1,5 @@
 from aiogram import Router, F, Bot
+from aiogram.methods import delete_my_commands
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -17,7 +18,7 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def handle_start_command(message: Message, state: FSMContext):
+async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """Handle start command.
     User starts the bot by sending the /start command.
     Start collecting user's data.
@@ -25,8 +26,10 @@ async def handle_start_command(message: Message, state: FSMContext):
     Args:
         message (Message): Message object
         state (FSMContext): FSMContext object
+        bot (Bot): Bot object
     """
-    await state.clear() 
+    await state.clear()
+    await bot.delete_my_commands()
     await message.answer('Привет, я буду помогать тебе. Напиши свое <b>имя</b>',
                          reply_markup=ReplyKeyboardRemove())
     await state.set_state(CreateProfile.sending_name)
@@ -126,7 +129,7 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
             await message.answer('Выбери свой <b>уровень активности</b>',
                                 reply_markup=ReplyKeyboardRemove())
             await message.answer(**content.as_kwargs(), 
-                                reply_markup=get_activity_level_kb())
+                                reply_markup=await get_activity_level_kb())
             await state.set_state(CreateProfile.sending_activity_level)
     except ValueError as e:
         await message.answer(str(e))
