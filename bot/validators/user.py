@@ -50,9 +50,9 @@ def validate_weight(weight_input: str | None) -> float:
     except ValueError as exc:
         raise ValueError("Вес должен быть числом от 20 до 300") from exc
 
-def validate_activity_level(activity_level_input: str | None) -> int:
+async def validate_activity_level(activity_level_input: str | None) -> int:
     try:
-        activity_levels = get_activity_levels()
+        activity_levels = await get_activity_levels()
         if activity_level_input is None:
             raise ValueError
         activity_level = int(activity_level_input)
