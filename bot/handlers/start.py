@@ -31,21 +31,7 @@ async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
     await state.clear()
     await bot.delete_my_commands()
-    await message.answer('Привет, я буду помогать тебе. Напиши свое <b>имя</b>',
-                         reply_markup=ReplyKeyboardRemove())
-    await state.set_state(CreateProfile.sending_name)
-
-
-@router.message(F.text, CreateProfile.sending_name)
-async def process_name(message: Message, state: FSMContext):
-    """Process user's name.
-
-    Args:
-        message (Message): Message object
-        state (FSMContext): FSMContext object
-    """
-    await state.update_data(username=message.text)
-    await message.answer('Теперь введи свой <b>возраст</b>',
+    await message.answer('Привет, я буду помогать вам. Напишите свой <b>возраст</b>',
                          reply_markup=ReplyKeyboardRemove())
     await state.set_state(CreateProfile.sending_age)
 
@@ -80,7 +66,7 @@ async def process_gender(message: Message, state: FSMContext):
     try:
         gender = validate_gender(message.text)
         await state.update_data(gender=gender)
-        await message.answer('А теперь введи свой <b>рост в сантиметрах</b>',
+        await message.answer('А теперь введите ваш <b>рост в сантиметрах</b>',
                             reply_markup=ReplyKeyboardRemove())
         await state.set_state(CreateProfile.sending_height)
     except ValueError as e:
@@ -98,7 +84,7 @@ async def process_height(message: Message, state: FSMContext):
     try:
         height = validate_height(message.text)
         # some checks
-        await message.answer('Укажи свой <b>вес в килограммах</b>',
+        await message.answer('Укажите ваш <b>вес в килограммах</b>',
                             reply_markup=ReplyKeyboardRemove())
         await state.update_data(height_cm=height)
         await state.set_state(CreateProfile.sending_weight)
@@ -127,7 +113,7 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
             await state.update_data(weight_kg=weight)
             
             content = as_marked_list(*levels_descriptions, marker="🏆 ") 
-            await message.answer('Выбери свой <b>уровень активности</b>',
+            await message.answer('Выберите ваш <b>уровень активности</b>',
                                 reply_markup=ReplyKeyboardRemove())
             await message.answer(**content.as_kwargs(), 
                                 reply_markup=await get_activity_level_kb())
@@ -147,9 +133,9 @@ async def process_activity_level(message: Message, state: FSMContext, bot: Bot):
     """
     try:
         activity_level = await validate_activity_level(message.text)
-        await message.answer('Отлично, теперь расскажи о своей <b>цели</b>: для чего ты занимаешься,'
-                            'чего хочешь добиться и прочее. Это сделает мою помощь более полезной.\n\n'
-                            'Если у тебя нет цели, то можешь так и написать', 
+        await message.answer('Отлично, теперь расскажите о вашей <b>цели</b>: для чего вы занимаетесь,'
+                            'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
+                            'Если у вас нет цели, то можете так и написать', 
                             reply_markup=ReplyKeyboardRemove())
         await state.update_data(activity_level=activity_level)
         await state.set_state(CreateProfile.sending_goal)

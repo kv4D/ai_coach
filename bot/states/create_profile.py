@@ -2,7 +2,6 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class CreateProfile(StatesGroup):
-    sending_name = State()
     sending_gender = State()
     sending_age = State()
     sending_height = State()

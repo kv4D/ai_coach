@@ -39,7 +39,6 @@ def render_user_data(user_data: dict) -> str:
     
     # field names to show
     fields = {
-        'username': '<strong>Имя пользователя</strong>',
         'age': '<strong>Возраст</strong>',
         'weight_kg': '<strong>Вес (кг)</strong>',
         'height_cm': '<strong>Рост (см)</strong>',
