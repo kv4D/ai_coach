@@ -1,3 +1,5 @@
+from webbrowser import get
+from asyncio import run
 import aiohttp
 
 
@@ -18,6 +20,46 @@ async def create_user(user_data: dict):
                 print("Status code:", response.status)
                 print("Details:", text)
                 response.raise_for_status()
+
+
+async def get_user_data(user_id: int) -> str:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"{API_URL}/user/get/{user_id}") as response:
+            if response.status != 200:
+                text = await response.text()
+                print("Status code:", response.status)
+                print("Details:", text)
+                response.raise_for_status()
+            else:
+                user_data = await response.json()
+                return render_user_data(user_data)
+
+
+def render_user_data(user_data: dict) -> str:
+    """Transform user data dictionary into a formatted string for display."""
+    formatted_data = []
+    
+    # field names to show
+    fields = {
+        'username': '<strong>Имя пользователя</strong>',
+        'age': '<strong>Возраст</strong>',
+        'weight_kg': '<strong>Вес (кг)</strong>',
+        'height_cm': '<strong>Рост (см)</strong>',
+        'activity_level': '<strong>Уровень активности</strong>',
+        'goal': '<strong>Цель тренировок</strong>'
+    }
+
+    for field, display_field_name in fields.items():
+        if field == "activity_level":
+            level = user_data['activity_level']['level']
+            level_name = user_data['activity_level']['name']
+            level_description = user_data['activity_level']['description']
+            formatted_data.append(f"{display_field_name}: {level} ({level_name})\n{level_description}")
+            continue
+        value = user_data.get(field, "Не указано")
+        formatted_data.append(f"{display_field_name}: {value}")
+
+    return "\n\n".join(formatted_data)
 
 
 async def update_user(user_data: dict):

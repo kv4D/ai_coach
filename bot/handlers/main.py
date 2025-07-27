@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
+from service.api import get_user_data
 from states.main import Main
 
 
@@ -35,7 +36,7 @@ async def handle_my_plan_command(message: Message, bot: Bot):
     if training_plan is None:
         await message.answer('Вы еще не создавали план.\nИспользуйте команду /generate_plan!')
     else:
-        await message.answer('<h3>Вот ваш план</h3>')
+        await message.answer('Вот ваш план')
         await message.answer(training_plan)
 
 @router.message(Command('generate_plan'), Main.main_menu)
@@ -50,7 +51,7 @@ async def handle_generate_plan_command(message: Message, bot: Bot):
         await message.answer('Генерирую план, ожидайте')
         # create user plan here
         training_plan = 'some training plan'
-    await message.answer('<h3>Вот ваш план</h3>')
+    await message.answer('Вот ваш план')
     await message.answer(training_plan)
 
 @router.message(Command('profile'), Main.main_menu)
@@ -63,5 +64,7 @@ async def handle_profile_command(message: Message, bot: Bot):
     Sets state to Profile, so user could manage his profile.
     """
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        user_data = 'some user data'
+        user_data = await get_user_data(message.from_user.id)
+
+    await message.answer('Вот ваш <b>профиль</b>')
     await message.answer(user_data)
