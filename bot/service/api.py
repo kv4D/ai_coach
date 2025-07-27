@@ -1,5 +1,3 @@
-from webbrowser import get
-from asyncio import run
 import aiohttp
 
 
@@ -30,9 +28,9 @@ async def get_user_data(user_id: int) -> str:
                 print("Status code:", response.status)
                 print("Details:", text)
                 response.raise_for_status()
-            else:
-                user_data = await response.json()
-                return render_user_data(user_data)
+
+            user_data = await response.json()
+            return render_user_data(user_data)
 
 
 def render_user_data(user_data: dict) -> str:
@@ -112,3 +110,19 @@ async def get_activity_levels_descriptions():
             for level in data:
                 descriptions_by_level[level['level']] = level['description']
             return descriptions_by_level
+
+async def get_user_training_plan(user_id: int) -> str | None:
+    """Get user's training plan from API's database."""
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"{API_URL}/plan/get/user/{user_id}") as response:
+            if response.status == 404:
+                return None
+            if response.status != 200:
+                text = await response.text()
+                print("Status code:", response.status)
+                print("Details:", text)
+                response.raise_for_status()
+            
+            data = await response.json()
+            plan = data['plan_description']
+            return plan

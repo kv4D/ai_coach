@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import get_user_data
+from service.api import get_user_data, get_user_training_plan
 from states.main import Main
 
 
@@ -31,12 +31,12 @@ async def handle_my_plan_command(message: Message, bot: Bot):
     If there is none, tell about it to the user.
     """
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        # get user's plan there
-        training_plan = 'some training plan'
+        training_plan = await get_user_training_plan(message.from_user.id)
+
     if training_plan is None:
         await message.answer('Вы еще не создавали план.\nИспользуйте команду /generate_plan!')
     else:
-        await message.answer('Вот ваш план')
+        await message.answer('Вот <b>ваш план</b>')
         await message.answer(training_plan)
 
 @router.message(Command('generate_plan'), Main.main_menu)
