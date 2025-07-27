@@ -30,11 +30,11 @@ async def get_all_levels(session: AsyncSession):
         raise NotFoundError("There are no levels yet.")
     return models_validate(ActivityLevel, levels)
 
-async def update(level_id: int, 
+async def update(level: int,
                  level_data: ActivityLevelUpdate,
                  session: AsyncSession):
     try:
-        level = await ActivityLevelCRUD.update_by_id(level_id, level_data, session=session)
+        level = await ActivityLevelCRUD.update_by_id(level, level_data, session=session)
         await session.commit()
         return ActivityLevel.model_validate(level)
     except NotFoundError:

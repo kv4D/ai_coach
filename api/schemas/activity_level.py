@@ -6,10 +6,9 @@ class ActivityLevel(BaseModel):
     """
     Activity level model.
     """
-    id: int = Field(description='Database ID')
     description: str = Field(description='About this activity level')
     name: str
-    level: int = Field(ge=0, 
+    level: int = Field(ge=0,
                        description='Activity level number')
 
     model_config = ConfigDict(from_attributes=True)
@@ -21,7 +20,7 @@ class ActivityLevelInput(BaseModel):
     """
     description: str = Field(description='About this activity level')
     name: str
-    level: int = Field(ge=0, 
+    level: int = Field(ge=0,
                        description='Activity level number')
 
 class ActivityLevelUpdate(BaseModel):
@@ -29,9 +28,9 @@ class ActivityLevelUpdate(BaseModel):
     Activity level model for database update.
     Use to update database entries.
     """
-    description: Optional[str] = Field(default=None, 
+    description: Optional[str] = Field(default=None,
                                        description='About this activity level')
     name: Optional[str] = None
-    level: Optional[int] = Field(default=None, 
-                                 ge=0, 
+    level: Optional[int] = Field(default=None,
+                                 ge=0,
                                  description='Activity level number')

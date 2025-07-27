@@ -34,8 +34,8 @@ async def update_activity_level(level_id: int,
     level = await service.update(level_id, level_data, session=session)
     return level
 
-@router.delete('/delete/{level_id}')
-async def delete_level(level_id: int,
+@router.delete('/delete/{level}')
+async def delete_level(level: int,
                        session: AsyncSession = Depends(get_db_session)):
     await service.delete(level_id, session=session)
     return JSONResponse(status_code=200, 

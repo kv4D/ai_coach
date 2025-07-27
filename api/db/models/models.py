@@ -6,7 +6,9 @@ from db.models.base_model import BaseModel
 
 class UserModel(BaseModel):
     __tablename__ = 'users'
-    
+
+    id: Mapped[int] = mapped_column(primary_key=True, 
+                                    autoincrement=True)
     username: Mapped[Optional[str]]
     age: Mapped[int]
     weight_kg: Mapped[float]
@@ -16,11 +18,12 @@ class UserModel(BaseModel):
     
     # connect to activity levels
     # one activity level per user
-    activity_level_id: Mapped[int] = mapped_column(ForeignKey('activity_levels.id'))
-    activity_level: Mapped['ActivityLevelModel'] = relationship("ActivityLevelModel",
-                                                                back_populates="users",
-                                                                # load with user
-                                                                lazy='joined')
+    activity_level: Mapped[Optional[int]] = mapped_column(ForeignKey('activity_levels.level'))
+    activity_level_relation: Mapped[Optional['ActivityLevelModel']] = relationship("ActivityLevelModel",
+                                                                                   back_populates="users",
+                                                                                   foreign_keys=[activity_level],
+                                                                                   # load with user
+                                                                                   lazy='joined')
     
     # connect to training plan
     # one plan per user
@@ -35,20 +38,23 @@ class UserModel(BaseModel):
 
 class ActivityLevelModel(BaseModel):
     __tablename__ = 'activity_levels'
-    
+
+    level: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str]
     name: Mapped[str]
-    level: Mapped[int]
     
     # connect to user
     # multiple users for a level
     users: Mapped[list['UserModel']] = relationship("UserModel",
-                                                   back_populates="activity_level")
+                                                   back_populates="activity_level_relation",
+                                                   foreign_keys="UserModel.activity_level")
 
 
 class TrainingPlanModel(BaseModel):
     __tablename__ = 'training_plans'
-    
+
+    id: Mapped[int] = mapped_column(primary_key=True, 
+                                    autoincrement=True)
     plan_description: Mapped[str]
     
     # connect to user

@@ -27,7 +27,7 @@ class User(BaseModel):
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
     goal: Optional[str] = None
-    activity_level: ActivityLevel
+    activity_level: Optional[ActivityLevel]
     training_plan: Optional[TrainingPlan]
     
     model_config = ConfigDict(from_attributes=True)
@@ -44,7 +44,7 @@ class UserInput(BaseModel, UserValidationMixin):
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
     gender: str
     goal: Optional[str] = None
-    activity_level_id: int
+    activity_level: Optional[int]
 
 class UserUpdate(BaseModel, UserValidationMixin):
     """
@@ -57,3 +57,4 @@ class UserUpdate(BaseModel, UserValidationMixin):
     height_cm: Optional[float] = Field(default=None, gt=60.0, lt= 250.0)
     gender: Optional[str] = None
     goal: Optional[str] = None
+    activity_level: Optional[int] = None
