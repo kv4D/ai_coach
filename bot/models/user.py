@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import CliSettingsSource
 from .enums import Gender
 
 
@@ -70,3 +71,14 @@ class User(BaseModel):
             return height
         except ValueError as exc:
             raise ValueError("Рост должен быть числом от 100 до 250") from exc
+
+    @classmethod
+    def get_display_name(cls, field_name: str) -> str:
+        """
+        Get field's display name.\n
+        Extracts 'title' parameter of a field.
+        """
+        field_info = cls.model_fields.get(field_name)
+        if field_info and hasattr(field_info, 'title'):
+            return field_info.title
+        return field_name
