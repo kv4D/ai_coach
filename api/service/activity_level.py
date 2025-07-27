@@ -20,7 +20,7 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession):
 
 async def get_by_level(level: int, session: AsyncSession):
     """Get info about the level in the database by its value."""
-    level_model = await ActivityLevelCRUD.get_by_level(level=level, session=session)
+    level_model = await ActivityLevelCRUD.get_by_id(level, session=session)
     return ActivityLevel.model_validate(level_model)
 
 async def get_all_levels(session: AsyncSession):
@@ -41,10 +41,10 @@ async def update(level: int,
         await session.rollback()
         raise
 
-async def delete(level_id: int,
+async def delete(level: int,
                  session: AsyncSession):
     try:
-        await ActivityLevelCRUD.delete_by_id(level_id, session=session)
+        await ActivityLevelCRUD.delete_by_id(level, session=session)
         await session.commit()
     except NotFoundError:
         await session.rollback()

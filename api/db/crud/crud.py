@@ -99,25 +99,3 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
 
 class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
     _model = ActivityLevelModel
-
-    @classmethod
-    async def get_by_level(cls, level: int, session: AsyncSession) -> None | ActivityLevelModel:
-        """Get the activity level info according to its level.
-
-        Args:
-            level: activity level
-            session (AsyncSession): asynchronous database session
-
-        Returns:
-            None | TDBModel: entry or None
-        """
-        query = select(cls._model).filter_by(level=level)
-        result = await session.execute(query)
-
-        # there can be only one entry or none
-        entry = result.scalar_one_or_none()
-
-        if entry is None:
-            raise NotFoundError(f"There is no level with such number: {level}.")
-
-        return entry
