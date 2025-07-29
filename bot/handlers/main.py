@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
-from api.client import get_user_training_plan
+from api.client import APIClient
 from states.main import Main
 
 
@@ -21,7 +21,7 @@ async def handle_help_command(message: Message):
     await message.answer('Какое-то сообщение о помощи')
 
 @router.message(Command('my_plan'), Main.main_menu)
-async def handle_my_plan_command(message: Message, bot: Bot):
+async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClient):
     """
     Handle /my_plan command.
 
@@ -29,7 +29,7 @@ async def handle_my_plan_command(message: Message, bot: Bot):
     If there is none, tell about it to the user.
     """
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        training_plan = await get_user_training_plan(message.from_user.id)
+        training_plan = await api_client.get_user_training_plan(message.from_user.id)
 
     if training_plan is None:
         await message.answer('Вы еще не создавали план.\nИспользуйте команду /generate_plan!')

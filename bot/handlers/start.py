@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
-from api.client import create_user, get_activity_levels, get_activity_levels_descriptions
+from api.client import APIClient
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.start import get_gender_kb, get_activity_level_kb
@@ -91,7 +91,10 @@ async def process_height(message: Message, state: FSMContext):
 
 
 @router.message(F.text, CreateProfile.sending_weight)
-async def process_weight(message: Message, state: FSMContext, bot: Bot):
+async def process_weight(message: Message, 
+                         state: FSMContext, 
+                         bot: Bot, 
+                         api_client: APIClient):
     """Process user's weight.
 
     Args:
@@ -102,8 +105,8 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
     try:
         weight = User.validate_weight(message.text)
         async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-            levels = await get_activity_levels()
-            descriptions = await get_activity_levels_descriptions()
+            levels = await api_client.get_activity_levels()
+            descriptions = await api_client.get_activity_levels_descriptions()
             levels_descriptions = [
                 f"Уровень {level}:\n{descriptions[level]}\n\n" for level in levels
                 ]
@@ -143,7 +146,10 @@ async def process_activity_level(message: Message, state: FSMContext, bot: Bot):
     
 
 @router.message(F.text, CreateProfile.sending_goal)
-async def process_goal(message: Message, state: FSMContext, bot: Bot):
+async def process_goal(message: Message, 
+                       state: FSMContext, 
+                       bot: Bot, 
+                       api_client: APIClient):
     """Process user's goal.
     User has finished collecting all the data.
     Create user in the API's database OR update existing user.
@@ -159,7 +165,7 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
         user_data = await state.get_data()
         user = User(**user_data, 
                     id=message.from_user.id)
-        await create_user(user)
+        await api_client.create_user(user)
     
     await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе.'
                          '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
