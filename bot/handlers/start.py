@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import create_user, get_activity_level, get_activity_levels, get_activity_levels_descriptions
+from api.client import create_user, get_activity_levels, get_activity_levels_descriptions
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.start import get_gender_kb, get_activity_level_kb
@@ -46,7 +46,6 @@ async def process_age(message: Message, state: FSMContext):
     """
     try:
         age = User.validate_age(message.text)
-        # some other checks
         await message.answer('Укажите ваш <b>пол</b>',
                              reply_markup=get_gender_kb())
         await state.update_data(age=age)
@@ -83,7 +82,6 @@ async def process_height(message: Message, state: FSMContext):
     """
     try:
         height = User.validate_height(message.text)
-        # some checks
         await message.answer('Укажите ваш <b>вес в килограммах</b>',
                             reply_markup=ReplyKeyboardRemove())
         await state.update_data(height_cm=height)
@@ -156,10 +154,9 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
         state (FSMContext): FSMContext object
         bot (Bot): Bot object
     """
-    await state.update_data(goal=message.text)
-    user_data = await state.get_data()
-
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        await state.update_data(goal=message.text)
+        user_data = await state.get_data()
         user = User(**user_data, 
                     id=message.from_user.id)
         await create_user(user)

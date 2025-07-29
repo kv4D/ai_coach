@@ -1,10 +1,10 @@
-from aiogram import Router, F, Bot
-from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.filters import CommandStart, Command
+from aiogram import Router, Bot
+from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import get_user, get_activity_level
+from api.client import get_user, get_activity_level
 from states.main import Main
 from states.profile import Profile
 
