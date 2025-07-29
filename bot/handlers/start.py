@@ -1,5 +1,4 @@
 from aiogram import Router, F, Bot
-from aiogram.methods import delete_my_commands
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -9,10 +8,10 @@ from aiogram.utils.chat_action import ChatActionSender
 from service.api import create_user, get_activity_levels, get_activity_levels_descriptions
 from states.create_profile import CreateProfile
 from states.main import Main
-from validators.user import validate_activity_level, validate_age, \
-    validate_gender, validate_height, validate_weight
 from keyboards.start import get_gender_kb, get_activity_level_kb
 from keyboards.menu_buttons import set_main_menu
+from models.user import User
+from models.activity_level import ActivityLevel
 
 
 router = Router()
@@ -31,8 +30,9 @@ async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
     await state.clear()
     await bot.delete_my_commands()
-    await message.answer('Привет, я буду помогать вам. Напишите свой <b>возраст</b>',
+    await message.answer('Привет, я буду помогать вам!\nДавайте заполним информацию о вас',
                          reply_markup=ReplyKeyboardRemove())
+    await message.answer('Введите ваш <b>возраст</b>')
     await state.set_state(CreateProfile.sending_age)
 
 
@@ -45,10 +45,10 @@ async def process_age(message: Message, state: FSMContext):
         state (FSMContext): FSMContext object
     """
     try:
-        age = validate_age(message.text)
+        age = User.validate_age(message.text)
         # some other checks
-        await message.answer('Укажи свой <b>пол</b>', 
-                            reply_markup=get_gender_kb())
+        await message.answer('Укажите ваш <b>пол</b>',
+                             reply_markup=get_gender_kb())
         await state.update_data(age=age)
         await state.set_state(CreateProfile.sending_gender)
     except ValueError as e:
@@ -64,7 +64,7 @@ async def process_gender(message: Message, state: FSMContext):
         state (FSMContext): FSMContext object
     """
     try:
-        gender = validate_gender(message.text)
+        gender = User.validate_gender(message.text)
         await state.update_data(gender=gender)
         await message.answer('А теперь введите ваш <b>рост в сантиметрах</b>',
                             reply_markup=ReplyKeyboardRemove())
@@ -82,7 +82,7 @@ async def process_height(message: Message, state: FSMContext):
         state (FSMContext): FSMContext object
     """
     try:
-        height = validate_height(message.text)
+        height = User.validate_height(message.text)
         # some checks
         await message.answer('Укажите ваш <b>вес в килограммах</b>',
                             reply_markup=ReplyKeyboardRemove())
@@ -102,7 +102,7 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
         bot (Bot): Bot object
     """
     try:
-        weight = validate_weight(message.text)
+        weight = User.validate_weight(message.text)
         async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
             levels = await get_activity_levels()
             descriptions = await get_activity_levels_descriptions()
@@ -116,7 +116,7 @@ async def process_weight(message: Message, state: FSMContext, bot: Bot):
             await message.answer('Выберите ваш <b>уровень активности</b>',
                                 reply_markup=ReplyKeyboardRemove())
             await message.answer(**content.as_kwargs(), 
-                                reply_markup=await get_activity_level_kb())
+                                reply_markup=get_activity_level_kb())
             await state.set_state(CreateProfile.sending_activity_level)
     except ValueError as e:
         await message.answer(str(e))
@@ -132,7 +132,7 @@ async def process_activity_level(message: Message, state: FSMContext, bot: Bot):
         bot (Bot): Bot object
     """
     try:
-        activity_level = await validate_activity_level(message.text)
+        activity_level = ActivityLevel.validate_level(message.text)
         await message.answer('Отлично, теперь расскажите о вашей <b>цели</b>: для чего вы занимаетесь,'
                             'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
                             'Если у вас нет цели, то можете так и написать', 
@@ -140,7 +140,8 @@ async def process_activity_level(message: Message, state: FSMContext, bot: Bot):
         await state.update_data(activity_level=activity_level)
         await state.set_state(CreateProfile.sending_goal)
     except ValueError as e:
-        await message.answer(str(e))
+        await message.answer(str(e),
+                             reply_markup=get_activity_level_kb())
     
 
 @router.message(F.text, CreateProfile.sending_goal)
@@ -156,14 +157,15 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
         bot (Bot): Bot object
     """
     await state.update_data(goal=message.text)
+    user_data = await state.get_data()
+
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        user = User(**user_data, id=message.from_user.id)
+        await create_user(user)
+    
     await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе.'
                          '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
                          reply_markup=ReplyKeyboardRemove())
-    user_data = await state.get_data()
-    user_data['id'] = message.from_user.id
-
-    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        await create_user(user_data)
     await state.clear()
     await set_main_menu(bot)
     await state.set_state(Main.main_menu)

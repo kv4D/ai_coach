@@ -3,9 +3,8 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
-from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import get_user_data
+from service.api import get_user
 from states.main import Main
 from states.profile import Profile
 
@@ -23,8 +22,7 @@ async def handle_profile_command(message: Message, bot: Bot, state: FSMContext):
     Sets state to Profile, so user could manage his profile.
     """
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        user_data = await get_user_data(message.from_user.id)
+        user = await get_user(message.from_user.id)
 
     await message.answer('Ваш <b>профиль</b>')
-    await message.answer(user_data)
     await state.set_state(Profile.viewing_profile)

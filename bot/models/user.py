@@ -1,18 +1,19 @@
 from pydantic import BaseModel, Field, field_validator
-from pydantic_settings import CliSettingsSource
-from .enums import Gender
+from .activity_level import ActivityLevel
+from .enums import GenderEnum
 
 
 class User(BaseModel):
+    id: int
     age: int = Field(description="Возраст (полных лет)",
                      title="Возраст")
-    gender: str = Field(description="Пол (мужской/женский)",
+    gender: str = Field(description="Пол из доступных в системе",
                         title="Пол")
     weight_kg: float = Field(description="Вес в килограммах",
                              title="Вес (кг)")
     height_cm: float = Field(description="Рост в сантиметрах",
                              title="Рост (см)")
-    activity_level: int
+    activity_level: ActivityLevel
     goal: str = Field(description="Цель тренировок",
                       title="Цель тренировок")
 
@@ -34,15 +35,15 @@ class User(BaseModel):
     @classmethod
     def validate_gender(cls, gender: str | None) -> str:
         try:
-            gender.lower()
             if gender is None:
                 raise ValueError
-            for type in Gender:
-                if gender in type.value:
+            gender = gender.lower()
+            for type in GenderEnum:
+                if gender == type.value:
                     return type.name.lower()
             raise ValueError   
         except ValueError as exc:
-            raise ValueError("Такого пола нет\nВыберите ваш пол c помощью кнопок, пожалуйста") from exc
+            raise ValueError("Такого пола нет") from exc
 
     @field_validator('weight_kg', mode='before')
     @classmethod
@@ -79,6 +80,6 @@ class User(BaseModel):
         Extracts 'title' parameter of a field.
         """
         field_info = cls.model_fields.get(field_name)
-        if field_info and hasattr(field_info, 'title'):
+        if field_info and hasattr(field_info, 'title') and field_info.title:
             return field_info.title
         return field_name

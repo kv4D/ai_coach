@@ -1,18 +1,17 @@
 import aiohttp
+from models.user import User
 
 
 API_URL = 'http://localhost:8000'
 
 
-async def create_user(user_data: dict):
+async def create_user(user: User):
     async with aiohttp.ClientSession() as session:
-        # check for user
-        async with session.get(f"{API_URL}/user/get/{user_data['id']}") as response:
+        async with session.get(f"{API_URL}/user/get/{user.id}") as response:
             if response.status == 200:
-                return await update_user(user_data)
-        
-        user_data['activity_level_id'] = await get_activity_level_id(user_data["activity_level"])
-        async with session.post(f"{API_URL}/user/create", json=user_data) as response:
+                return await update_user(user)
+
+        async with session.post(f"{API_URL}/user/create", json=user.model_dump_json()) as response:
             if response.status != 200:
                 text = await response.text()
                 print("Status code:", response.status)
@@ -20,7 +19,7 @@ async def create_user(user_data: dict):
                 response.raise_for_status()
 
 
-async def get_user_data(user_id: int) -> str:
+async def get_user(user_id: int) -> User:
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{API_URL}/user/get/{user_id}") as response:
             if response.status != 200:
@@ -30,7 +29,8 @@ async def get_user_data(user_id: int) -> str:
                 response.raise_for_status()
 
             user_data = await response.json()
-            return render_user_data(user_data)
+            user = User(**user_data)
+            return user
 
 
 def render_user_data(user_data: dict) -> str:
@@ -59,9 +59,9 @@ def render_user_data(user_data: dict) -> str:
     return "\n\n".join(formatted_data)
 
 
-async def update_user(user_data: dict):
+async def update_user(user: User):
     async with aiohttp.ClientSession() as session:
-        async with session.patch(f"{API_URL}/user/update/{user_data['id']}", json=user_data) as response:
+        async with session.patch(f"{API_URL}/user/update/{user.id}", json=user.model_dump_json()) as response:
             if response.status != 200:
                 text = await response.text()
                 print("Status code:", response.status)
@@ -81,7 +81,7 @@ async def get_activity_level_id(level: int):
             return data['id']
 
 
-async def get_activity_levels():
+async def get_activity_levels() -> list[int]:
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{API_URL}/level/all") as response:
             if response.status != 200:

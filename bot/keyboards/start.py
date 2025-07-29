@@ -1,7 +1,7 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from aiogram.types.keyboard_button import KeyboardButton
 
-from service.api import get_activity_levels
+from models.enums import ActivityLevelEnum
 
 
 def get_gender_kb():
@@ -14,10 +14,10 @@ def get_gender_kb():
                                  input_field_placeholder="Нажми на кнопку для выбора")
     return keyboard
 
-async def get_activity_level_kb():
+def get_activity_level_kb():
     builder = ReplyKeyboardBuilder()
     # extract service data here
-    levels = await get_activity_levels()
+    levels = ActivityLevelEnum.make_list()
     for level in levels:
         builder.button(text=str(level))
     builder.adjust(len(levels))
