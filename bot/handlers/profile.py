@@ -4,7 +4,7 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import get_user
+from service.api import get_user, get_activity_level
 from states.main import Main
 from states.profile import Profile
 
@@ -23,6 +23,9 @@ async def handle_profile_command(message: Message, bot: Bot, state: FSMContext):
     """
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         user = await get_user(message.from_user.id)
+        user_activity_level = await get_activity_level(user.activity_level)
+        
 
     await message.answer('Ваш <b>профиль</b>')
+    await message.answer(user.get_formatted_string() + '\n' + user_activity_level.get_formatted_string())
     await state.set_state(Profile.viewing_profile)

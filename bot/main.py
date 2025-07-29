@@ -8,6 +8,7 @@ from redis.asyncio import Redis
 from config import config
 from handlers.start import router as start_router
 from handlers.main import router as main_router
+from handlers.profile import router as profile_router
 
 
 async def main():
@@ -24,7 +25,9 @@ async def main():
     dispatcher = Dispatcher(storage=storage)
     
     # include routers here
-    dispatcher.include_routers(start_router, main_router)
+    dispatcher.include_routers(start_router, 
+                               main_router,
+                               profile_router)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dispatcher.start_polling(bot)

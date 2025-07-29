@@ -53,17 +53,3 @@ async def handle_generate_plan_command(message: Message, bot: Bot):
         training_plan = 'some training plan'
     await message.answer('Вот ваш план')
     await message.answer(training_plan)
-
-@router.message(Command('profile'), Main.main_menu)
-async def handle_profile_command(message: Message, bot: Bot):
-    """
-    Handle /profile command.
-
-    Get user's info from API's database.
-    Sends message with this data.
-    Sets state to Profile, so user could manage his profile.
-    """
-    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        user_data = await get_user(message.from_user.id)
-
-    await message.answer('Вот ваш <b>профиль</b>')

@@ -23,3 +23,10 @@ class ActivityLevel(BaseModel):
             return level
         except ValueError as exc:
             raise ValueError(f"Такого уровня активности нет: {level}") from exc
+
+    def get_formatted_string(self) -> str:
+        output = ''
+
+        output += f"<b>Уровень активности {self.level}</b>:\n{self.description}\n"
+
+        return output

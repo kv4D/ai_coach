@@ -84,3 +84,21 @@ class User(BaseModel):
         if field_info and hasattr(field_info, 'title') and field_info.title:
             return field_info.title
         return field_name
+
+    def get_formatted_string(self) -> str:
+        output = ''
+        
+        display_fields = ['age',
+                          'gender',
+                          'weight_kg',
+                          'height_cm',
+                          'goal']
+
+        for field in display_fields:
+            value = getattr(self, field)
+            if field == 'gender':
+                value = GenderEnum[value.upper()].value
+            output += f"<b>{self.get_display_name(field)}</b>: {value}\n"
+
+        return output
+
