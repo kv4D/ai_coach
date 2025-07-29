@@ -9,9 +9,9 @@ from exceptions import AlreadyExistError, NotFoundError
 async def create(user_data: UserInput, session: AsyncSession):
     try:
         user = await UserCRUD.create(user_data, session=session)
-        user_data = User.model_validate(user)
+        user = User.model_validate(user)
         await session.commit()
-        return user_data
+        return user
     except IntegrityError as e:
         await session.rollback()
         error_message = str(e).lower()
@@ -20,6 +20,9 @@ async def create(user_data: UserInput, session: AsyncSession):
             raise NotFoundError("No such activity level.") from e
         if 'unique' in error_message:
             raise AlreadyExistError('There is already a user with such ID.') from e
+    except:
+        await session.rollback()
+        raise
 
 async def get_all(session: AsyncSession):
     users = await UserCRUD.get_all(session=session)

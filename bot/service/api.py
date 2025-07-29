@@ -1,4 +1,5 @@
 import aiohttp
+from models.activity_level import ActivityLevel
 from models.user import User
 
 
@@ -11,7 +12,7 @@ async def create_user(user: User):
             if response.status == 200:
                 return await update_user(user)
 
-        async with session.post(f"{API_URL}/user/create", json=user.model_dump_json()) as response:
+        async with session.post(f"{API_URL}/user/create", json=user.model_dump()) as response:
             if response.status != 200:
                 text = await response.text()
                 print("Status code:", response.status)
@@ -61,7 +62,7 @@ def render_user_data(user_data: dict) -> str:
 
 async def update_user(user: User):
     async with aiohttp.ClientSession() as session:
-        async with session.patch(f"{API_URL}/user/update/{user.id}", json=user.model_dump_json()) as response:
+        async with session.patch(f"{API_URL}/user/update/{user.id}", json=user.model_dump()) as response:
             if response.status != 200:
                 text = await response.text()
                 print("Status code:", response.status)
@@ -69,7 +70,7 @@ async def update_user(user: User):
                 response.raise_for_status()
 
 
-async def get_activity_level_id(level: int):
+async def get_activity_level(level: int):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{API_URL}/level/get/{level}") as response:
             if response.status != 200:
@@ -78,7 +79,8 @@ async def get_activity_level_id(level: int):
                 print("Details:", text)
                 response.raise_for_status()
             data = await response.json()
-            return data['id']
+            activity_level = ActivityLevel(**data)
+            return activity_level
 
 
 async def get_activity_levels() -> list[int]:

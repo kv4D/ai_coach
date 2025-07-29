@@ -13,7 +13,7 @@ class User(BaseModel):
                              title="Вес (кг)")
     height_cm: float = Field(description="Рост в сантиметрах",
                              title="Рост (см)")
-    activity_level: ActivityLevel
+    activity_level: int
     goal: str = Field(description="Цель тренировок",
                       title="Цель тренировок")
 
@@ -38,9 +38,10 @@ class User(BaseModel):
             if gender is None:
                 raise ValueError
             gender = gender.lower()
-            for type in GenderEnum:
-                if gender == type.value:
-                    return type.name.lower()
+            for gender_type in GenderEnum:
+                # use stated gender type anyway
+                if gender == gender_type.value or gender_type.name.lower() == gender:
+                    return gender_type.name.lower()
             raise ValueError   
         except ValueError as exc:
             raise ValueError("Такого пола нет") from exc

@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.formatting import as_marked_list
 from aiogram.utils.chat_action import ChatActionSender
-from service.api import create_user, get_activity_levels, get_activity_levels_descriptions
+from service.api import create_user, get_activity_level, get_activity_levels, get_activity_levels_descriptions
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.start import get_gender_kb, get_activity_level_kb
@@ -160,7 +160,8 @@ async def process_goal(message: Message, state: FSMContext, bot: Bot):
     user_data = await state.get_data()
 
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        user = User(**user_data, id=message.from_user.id)
+        user = User(**user_data, 
+                    id=message.from_user.id)
         await create_user(user)
     
     await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе.'

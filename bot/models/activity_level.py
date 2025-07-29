@@ -7,7 +7,7 @@ class ActivityLevel(BaseModel):
                        title="Уровень активности")
     description: str = Field(description="Описание уровня активности с подробностями",
                              title="Описание")
-    title: str = Field(description="Название",
+    name: str = Field(description="Название",
                        title="Название")
 
     @field_validator("level", mode="before")

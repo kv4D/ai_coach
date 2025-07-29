@@ -10,6 +10,19 @@ from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 class UserCRUD(BaseCRUD[UserModel]):
     _model = UserModel
 
+    @classmethod
+    async def create(cls, data: PydanticModel, session: AsyncSession) -> UserModel:
+        """Create a model entry in the database.
+
+        Args:
+            session (AsyncSession): asynchronous database session
+
+        Returns:
+            TDBModel: created model entry
+        """
+        entry = await super().create(data, session=session)
+        await session.refresh(entry, attribute_names=["training_plan"])
+        return entry
 
 class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     _model = TrainingPlanModel
