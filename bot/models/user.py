@@ -13,7 +13,8 @@ class User(BaseModel):
                              title="Вес (кг)")
     height_cm: float = Field(description="Рост в сантиметрах",
                              title="Рост (см)")
-    activity_level: int
+    activity_level: int = Field(description="Уровень активности из доступных",
+                                title="Уровень активности")
     goal: str = Field(description="Цель тренировок",
                       title="Цель тренировок")
 
