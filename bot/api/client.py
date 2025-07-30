@@ -46,13 +46,13 @@ class APIClient:
             user = User(**user_data)
             return user
 
-    async def update_user(self, user: User):
+    async def update_user_field(self, user_id: int, field_name: str, value):
         """
         Update data of the user.
         Can update only existing user.
         """
-        async with self.session.patch(f"/user/update/{user.id}", 
-                                      json=user.model_dump()) as response:
+        async with self.session.patch(f"/user/update/{user_id}", 
+                                      json={field_name: value}) as response:
             await check_response_status(response)
 
     async def get_activity_level(self, level: int):
@@ -78,7 +78,9 @@ class APIClient:
             return levels
 
     async def get_user_training_plan(self, user_id: int) -> str | None:
-        """Get user's training plan from API's database."""
+        """
+        Get user's training plan from API's database.
+        """
         async with self.session.get(f"/plan/get/user/{user_id}") as response:
             if response.status == 404:
                 return None

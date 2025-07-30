@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 from .activity_level import ActivityLevel
 from .enums import ActivityLevelEnum, GenderEnum
@@ -102,4 +103,3 @@ class User(BaseModel):
             output += f"<b>{self.get_display_name(field)}</b>: {value}\n"
 
         return output
-

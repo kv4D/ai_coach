@@ -1,6 +1,6 @@
 from aiogram import Router, F, Bot
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
@@ -18,7 +18,7 @@ from models.activity_level import ActivityLevel
 router = Router()
 
 
-@router.message(CommandStart())
+@router.message(CommandStart(), StateFilter(None, Main.main_menu))
 async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
     Handle /start command.

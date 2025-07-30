@@ -92,6 +92,9 @@ async def process_new_field_value(message: Message,
         else:
             validated_value = getattr(User, f"validate_{field_to_update}")(new_value)
         # updating value
+        await api_client.update_user_field(message.from_user.id, 
+                                           field_to_update,
+                                           validated_value)
         await message.answer(f"Изменения применены успешно")
         await state.set_state(Main.main_menu)
     except ValueError as e:
