@@ -26,7 +26,5 @@ class ActivityLevel(BaseModel):
 
     def get_formatted_string(self) -> str:
         output = ''
-
-        output += f"<b>Уровень активности {self.level}</b>:\n{self.description}\n"
-
+        output += f"<b>Уровень активности {self.level}</b>:\n<b>{self.name}</b>\n{self.description}\n"
         return output
