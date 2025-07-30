@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from .activity_level import ActivityLevel
-from .enums import GenderEnum
+from .enums import ActivityLevelEnum, GenderEnum
 
 
 class User(BaseModel):
@@ -49,7 +49,7 @@ class User(BaseModel):
 
     @field_validator('weight_kg', mode='before')
     @classmethod
-    def validate_weight(cls, weight: str | float | None) -> float:
+    def validate_weight_kg(cls, weight: str | float | None) -> float:
         try:
             if weight is None:
                 raise ValueError
@@ -63,7 +63,7 @@ class User(BaseModel):
 
     @field_validator('height_cm', mode='before')
     @classmethod
-    def validate_height(cls, height: str | float | None) -> float:
+    def validate_height_cm(cls, height: str | float | None) -> float:
         try:
             if height is None:
                 raise ValueError
