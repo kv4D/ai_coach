@@ -93,13 +93,3 @@ class PromptManager:
     это поле в настройках профиля, а в текущем запросе
     используй предоставленную информацию как приоритетную
     """
-
-user = User(id=100,
-            username='hey',
-            age=20,
-            weight_kg=72.3,
-            height_cm=183.0,
-            gender='male',
-            activity_level=1,
-            activity_level_info=None,
-            goal='Стать сильнее')

@@ -12,6 +12,8 @@ class Config(BaseSettings):
     DB_PASSWORD: str
     API_DB_NAME: str
     API_DB_PORT: str
+    AI_API_KEY: str
+    AI_MODEL_NAME: str
 
     model_config = SettingsConfigDict(env_file=ENV_PATH,
                                       env_file_encoding='utf-8',

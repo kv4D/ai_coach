@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
 from exceptions import NotFoundError, AlreadyExistError
 from routes import user, activity_levels, training_plan
 
