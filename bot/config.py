@@ -10,9 +10,9 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(env_file=ENV_PATH,
                                       env_file_encoding='utf-8',
                                       extra='ignore')
-    DB_HOST: str
-    TG_BOT_TOKEN: str
-    TG_BOT_STORAGE_PORT: int
+    HOST: str
+    BOT_TOKEN: str
+    BOT_STORAGE_PORT: int
 
 
 # import this to use config

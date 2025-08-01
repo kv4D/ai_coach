@@ -34,9 +34,9 @@ async def update(level: int,
                  level_data: ActivityLevelUpdate,
                  session: AsyncSession):
     try:
-        level = await ActivityLevelCRUD.update_by_id(level, level_data, session=session)
+        level_model = await ActivityLevelCRUD.update_by_id(level, level_data, session=session)
         await session.commit()
-        return ActivityLevel.model_validate(level)
+        return ActivityLevel.model_validate(level_model)
     except NotFoundError:
         await session.rollback()
         raise

@@ -14,8 +14,8 @@ from handlers.profile import router as profile_router
 
 
 def create_storage() -> RedisStorage:
-    redis = Redis(host=config.DB_HOST,
-                  port=config.TG_BOT_STORAGE_PORT)
+    redis = Redis(host=config.HOST,
+                  port=config.BOT_STORAGE_PORT)
     storage = RedisStorage(redis=redis)
     return storage
 
@@ -24,7 +24,7 @@ async def main():
     """
     Start the bot
     """
-    bot = Bot(token=config.TG_BOT_TOKEN,
+    bot = Bot(token=config.BOT_TOKEN,
               session=AiohttpSession(),
               default=DefaultBotProperties(
                   parse_mode=ParseMode.HTML
