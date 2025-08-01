@@ -55,6 +55,15 @@ class APIClient:
                                       json={field_name: value}) as response:
             await check_response_status(response)
 
+    async def update_user(self, user: User):
+        """
+        Update data of the user.
+        Can update only existing user.
+        """
+        async with self.session.patch(f"/user/update/{user.id}", 
+                                      json=user.model_dump()) as response:
+            await check_response_status(response)
+
     async def get_activity_level(self, level: int):
         """
         Get activity level data by 'level' field.

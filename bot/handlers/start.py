@@ -73,7 +73,7 @@ async def process_height(message: Message, state: FSMContext):
     If everything is OK: try to get weight.
     """
     try:
-        height = User.validate_height(message.text)
+        height = User.validate_height_cm(message.text)
         await message.answer('Укажите ваш <b>вес в килограммах</b>',
                             reply_markup=ReplyKeyboardRemove())
         await state.update_data(height_cm=height)
@@ -92,7 +92,7 @@ async def process_weight(message: Message,
     If everything is OK: try to get activity level.
     """
     try:
-        weight = User.validate_weight(message.text)
+        weight = User.validate_weight_kg(message.text)
         async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
             levels_info = await get_activity_levels_description(api_client)
 
