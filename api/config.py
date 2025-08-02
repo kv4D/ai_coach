@@ -10,16 +10,11 @@ class Config(BaseSettings):
     HOST: str
     DB_USER: str
     DB_PASSWORD: str
-<<<<<<< Updated upstream
-    API_DB_NAME: str
-    API_DB_PORT: str
-=======
     DB_NAME: str
     DB_PORT: str
 
     AI_API_KEY: str
     AI_MODEL_NAME: str
->>>>>>> Stashed changes
 
     model_config = SettingsConfigDict(env_file=ENV_PATH,
                                       env_file_encoding='utf-8',
