@@ -1,3 +1,4 @@
+"""Service layer logic for User."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from db.crud.crud import UserCRUD
@@ -6,7 +7,13 @@ from schemas.utils import models_validate
 from exceptions import AlreadyExistError, NotFoundError
 
 
-async def create(user_data: UserInput, session: AsyncSession):
+async def create(user_data: UserInput, session: AsyncSession) -> User | None:
+    """Create a new user in the database.
+
+    Args:
+        user_data (`UserInput`): data for a new user
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
         user = await UserCRUD.create(user_data, session=session)
         user = User.model_validate(user)
@@ -24,13 +31,24 @@ async def create(user_data: UserInput, session: AsyncSession):
         await session.rollback()
         raise
 
-async def get_all(session: AsyncSession):
+async def get_all(session: AsyncSession) -> list[User]:
+    """Get all users in the database.
+
+    Args:
+        session (`AsyncSession`): an asynchronous database session
+    """
     users = await UserCRUD.get_all(session=session)
     if users is None:
-        raise NotFoundError('There are no users yet.')
+        raise NotFoundError('There are no users.')
     return models_validate(User, users)
 
-async def get_by_id(user_id: int, session: AsyncSession):
+async def get_by_id(user_id: int, session: AsyncSession) -> User:
+    """Get the user by their ID in the database.
+
+    Args:
+        user_id (`int`)
+        session (`AsyncSession`): an asynchronous database session
+    """
     user = await UserCRUD.get_by_id(user_id, session=session)
     if user is None:
         raise NotFoundError("There is no user with such ID.")
@@ -38,7 +56,14 @@ async def get_by_id(user_id: int, session: AsyncSession):
 
 async def update(user_id: int,
                  user_data: UserUpdate,
-                 session: AsyncSession):
+                 session: AsyncSession) -> User:
+    """Update the user by their ID in the database.
+
+    Args:
+        user_id (`int`)
+        user_data (`UserUpdate`): new data for the user
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
         user = await UserCRUD.update_by_id(user_id, user_data, session=session)
         await session.commit()
@@ -48,7 +73,13 @@ async def update(user_id: int,
         raise
 
 async def delete(user_id: int,
-                 session: AsyncSession):
+                 session: AsyncSession) -> None:
+    """Delete the user by their ID in the database.
+
+    Args:
+        user_id (`int`)
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
         await UserCRUD.delete_by_id(user_id, session=session)
         await session.commit()
