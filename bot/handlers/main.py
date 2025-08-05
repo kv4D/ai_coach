@@ -1,7 +1,7 @@
+"""Handlers for main state."""
 from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.filters import Command
-from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
 from api.client import APIClient
 from states.main import Main
@@ -10,7 +10,7 @@ from states.main import Main
 router = Router()
 
 
-@router.message(Command('help'), Main.main_menu)
+@router.message(Command('help'), Main.main)
 async def handle_help_command(message: Message):
     """Handle /help command.
 
@@ -20,7 +20,7 @@ async def handle_help_command(message: Message):
     """
     await message.answer('Какое-то сообщение о помощи')
 
-@router.message(Command('my_plan'), Main.main_menu)
+@router.message(Command('my_plan'), Main.main)
 async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClient):
     """
     Handle /my_plan command.
@@ -37,7 +37,7 @@ async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClie
         await message.answer('Вот <b>ваш план</b>')
         await message.answer(training_plan)
 
-@router.message(Command('generate_plan'), Main.main_menu)
+@router.message(Command('generate_plan'), Main.main)
 async def handle_generate_plan_command(message: Message, bot: Bot):
     """
     Handle /generate_plan command.

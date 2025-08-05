@@ -2,7 +2,6 @@ from aiogram import F, Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
 from api.client import APIClient
 from models.activity_level import ActivityLevel
@@ -18,7 +17,7 @@ from states.profile import Profile
 router = Router()
 
 
-@router.message(Command('profile'), Main.main_menu)
+@router.message(Command('profile'), Main.main)
 async def handle_profile_command(message: Message, 
                                  bot: Bot,
                                  api_client: APIClient):
@@ -38,10 +37,14 @@ async def handle_profile_command(message: Message,
                          reply_markup=get_profile_kb())
 
 
-@router.callback_query(UserDataCallbackFactory.filter(F.field.contains("gender")), Main.main_menu)
+@router.callback_query(UserDataCallbackFactory.filter(F.field.contains("gender")), Main.main)
 async def callback_user_gender_update(callback: CallbackQuery,
                                       callback_data: UserDataCallbackFactory,
                                       state: FSMContext):
+    """Handler on `gender` field of User.
+    
+    Provides gender keyboard.
+    """
     field_to_update = callback_data.field
 
     await callback.message.answer('Выберите новое значение',
@@ -52,11 +55,16 @@ async def callback_user_gender_update(callback: CallbackQuery,
     await state.update_data(field_to_update=field_to_update)
 
 
-@router.callback_query(UserDataCallbackFactory.filter(F.field.contains("activity")), Main.main_menu)
+@router.callback_query(UserDataCallbackFactory.filter(F.field.contains("activity")), Main.main)
 async def callback_user_activity_update(callback: CallbackQuery,
                                         callback_data: UserDataCallbackFactory,
                                         state: FSMContext,
                                         api_client: APIClient):
+    """Handler on `activity_level` field of User.
+
+    Provides levels descriptions and keyboard to choose
+    available options.
+    """
     field_to_update = callback_data.field
     await callback.message.answer('Выберите новое значение')
     
@@ -69,10 +77,11 @@ async def callback_user_activity_update(callback: CallbackQuery,
     await state.update_data(field_to_update=field_to_update)
 
 
-@router.callback_query(UserDataCallbackFactory.filter(), Main.main_menu)
+@router.callback_query(UserDataCallbackFactory.filter(), Main.main)
 async def callback_user_update(callback: CallbackQuery,
                                callback_data: UserDataCallbackFactory,
                                state: FSMContext):
+    """Handler on any other field of User."""
     field_to_update = callback_data.field
     await callback.answer()
     await callback.message.answer('Введите новое значение')
@@ -84,6 +93,10 @@ async def callback_user_update(callback: CallbackQuery,
 async def process_new_field_value(message: Message,
                                   state: FSMContext,
                                   api_client: APIClient):
+    """Handler on user input.
+    
+    Validates new value and updates user data.
+    """
     try:
         field_to_update = await state.get_value('field_to_update')
         new_value = message.text
@@ -96,7 +109,7 @@ async def process_new_field_value(message: Message,
                                            field_to_update,
                                            validated_value)
         await message.answer(f"Изменения применены успешно")
-        await state.set_state(Main.main_menu)
+        await state.set_state(Main.main)
     except ValueError as e:
         await message.answer(str(e))
         return

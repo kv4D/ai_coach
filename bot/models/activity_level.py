@@ -25,6 +25,10 @@ class ActivityLevel(BaseModel):
             raise ValueError(f"Такого уровня активности нет: {level}") from exc
 
     def get_formatted_string(self) -> str:
+        """
+        Get user-friendly string with all data from
+        ActivityLevel instance.
+        """
         output = ''
         output += f"<b>Уровень активности {self.level}</b>:\n<b>{self.name}</b>\n{self.description}\n"
         return output

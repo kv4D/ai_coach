@@ -1,7 +1,16 @@
 from api.client import APIClient
 
 
-async def get_activity_levels_description(api_client: APIClient):
+async def get_activity_levels_description(api_client: APIClient) -> str:    
+    """Get activity levels descriptions.
+    
+    Provides string that contains:
+    - all levels
+    - all fields for every activity level
+
+    Args:
+        api_client (`APIClient`): an API client to make requests
+    """
     try:
         levels = await api_client.get_activity_levels()
         message_str = ""

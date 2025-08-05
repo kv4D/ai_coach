@@ -79,8 +79,12 @@ class User(BaseModel):
     @classmethod
     def get_display_name(cls, field_name: str) -> str:
         """
-        Get field's display name.\n
+        Get field's display name.
+
         Extracts 'title' parameter of a field.
+
+        Args:
+            field_name (`str`): User model field name
         """
         field_info = cls.model_fields.get(field_name)
         if field_info and hasattr(field_info, 'title') and field_info.title:
@@ -88,6 +92,10 @@ class User(BaseModel):
         return field_name
 
     def get_formatted_string(self) -> str:
+        """
+        Get user-friendly string with all data from
+        User instance.
+        """
         output = ''
         
         display_fields = ['age',
