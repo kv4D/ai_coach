@@ -5,6 +5,7 @@ from db.crud.crud import UserCRUD
 from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
 from exceptions import AlreadyExistError, NotFoundError
+from llm.ai_client import AIClient
 
 
 async def create(user_data: UserInput, session: AsyncSession) -> User | None:
@@ -86,3 +87,17 @@ async def delete(user_id: int,
     except NotFoundError:
         await session.rollback()
         raise
+
+async def get_ai_answer(user_id: int,
+                        user_request: str,
+                        session: AsyncSession) -> str:
+    """Answer user's request/answer with AI.
+    
+    Args:
+        user_id (`int`)
+        user_request (`str`): user's message to AI
+        session (`AsyncSession`): an asynchronous database session
+    """
+    user = await get_by_id(user_id, session)
+    response = await AIClient.generate_user_response(user, user_request)
+    return response
