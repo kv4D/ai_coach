@@ -1,3 +1,4 @@
+"""Service layer logic for TrainingPlan."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from exceptions import NotFoundError
@@ -7,7 +8,14 @@ from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanU
 
 async def create(user_id: int, 
                  plan_data: TrainingPlanInput, 
-                 session: AsyncSession):
+                 session: AsyncSession) -> TrainingPlan | None:
+    """Create a new training plan for the user in the database.
+
+    Args:
+        user_id (`int`)
+        plan_data (`ActivityLevelInput`): data for a new training plan
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
         plan = await TrainingPlanCRUD.create_for_user(user_id, 
                                                       plan_data, 
@@ -20,7 +28,13 @@ async def create(user_id: int,
         if 'foreign key' in error_message:
             raise NotFoundError(f"No user with such ID.")
 
-async def get_user_plan(user_id: int, session: AsyncSession):
+async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
+    """Get the training plan for the user in the database.
+
+    Args:
+        user_id (`int`)
+        session (`AsyncSession`): an asynchronous database session
+    """
     plan = await TrainingPlanCRUD.get_by_user_id(user_id, session=session)
     if plan is None:
         raise NotFoundError(f'No training plan for user with this ID: {user_id}')
@@ -29,7 +43,16 @@ async def get_user_plan(user_id: int, session: AsyncSession):
 
 async def update_user_plan(user_id: int, 
                            plan_data: TrainingPlanUpdate, 
-                           session: AsyncSession):
+                           session: AsyncSession) -> None:
+    """Update the training plan for the user in the database.
+
+    Yoy can change plan's content, but not the user who owns the plan.
+
+    Args:
+        user_id (`int`)
+        plan_data (`TrainingPlanUpdate`): new data for the training plan
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
         await TrainingPlanCRUD.update_by_user_id(user_id, plan_data, session=session)
         await session.commit()
@@ -37,9 +60,15 @@ async def update_user_plan(user_id: int,
         await session.rollback()
         raise
 
-async def delete(id: int, session: AsyncSession):
+async def delete(user_id: int, session: AsyncSession) -> None:
+    """Delete the training plan for the user in the database.
+
+    Args:
+        user_id (`int`)
+        session (`AsyncSession`): an asynchronous database session
+    """
     try:
-        await TrainingPlanCRUD.delete_by_id(id, session=session)
+        await TrainingPlanCRUD.delete_by_id(user_id, session=session)
         await session.commit()
     except NotFoundError:
         await session.rollback()

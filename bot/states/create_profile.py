@@ -8,4 +8,3 @@ class CreateProfile(StatesGroup):
     sending_weight = State()
     sending_goal = State()
     sending_activity_level = State()
-    

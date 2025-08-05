@@ -14,6 +14,7 @@ from handlers.profile import router as profile_router
 
 
 def create_storage() -> RedisStorage:
+    """Create FSM storage for bot."""
     redis = Redis(host=config.HOST,
                   port=config.BOT_STORAGE_PORT)
     storage = RedisStorage(redis=redis)
@@ -21,9 +22,7 @@ def create_storage() -> RedisStorage:
 
 
 async def main():
-    """
-    Start the bot
-    """
+    """Start the bot."""
     bot = Bot(token=config.BOT_TOKEN,
               session=AiohttpSession(),
               default=DefaultBotProperties(
