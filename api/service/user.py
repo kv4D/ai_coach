@@ -1,10 +1,11 @@
 """Service layer logic for User."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from db.crud.crud import UserCRUD
+from db.crud.crud import ActivityLevelCRUD, UserCRUD
 from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
 from schemas.ai_request import UserAIRequest
+from schemas.activity_level import ActivityLevel
 from exceptions import AlreadyExistError, NotFoundError
 from llm.ai_client import AIClient
 
@@ -33,6 +34,11 @@ async def create(user_data: UserInput, session: AsyncSession) -> User | None:
         await session.rollback()
         raise
 
+async def set_activity_level(user: User, session: AsyncSession):
+    if user.activity_level:
+        activity_level = await ActivityLevelCRUD.get_by_id(user.activity_level, session)
+        user.activity_level_info = ActivityLevel.model_validate(activity_level)
+
 async def get_all(session: AsyncSession) -> list[User]:
     """Get all users in the database.
 
@@ -40,9 +46,16 @@ async def get_all(session: AsyncSession) -> list[User]:
         session (`AsyncSession`): an asynchronous database session
     """
     users = await UserCRUD.get_all(session=session)
+
     if users is None:
         raise NotFoundError('There are no users.')
-    return models_validate(User, users)
+
+    users = models_validate(User, users)
+
+    for user in users:
+        await set_activity_level(user, session=session)
+
+    return users
 
 async def get_by_id(user_id: int, session: AsyncSession) -> User:
     """Get the user by their ID in the database.
@@ -54,7 +67,11 @@ async def get_by_id(user_id: int, session: AsyncSession) -> User:
     user = await UserCRUD.get_by_id(user_id, session=session)
     if user is None:
         raise NotFoundError("There is no user with such ID.")
-    return User.model_validate(user)
+
+    user = User.model_validate(user)
+    await set_activity_level(user, session=session)
+
+    return user
 
 async def update(user_id: int,
                  user_data: UserUpdate,
