@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.user import User, UserInput, UserUpdate
+from schemas.ai_request import UserAIRequest
 from db.database import get_db_session
 from service import user as service
 
@@ -21,6 +22,11 @@ async def create_user(user_data: UserInput,
     """
     user = await service.create(user_data, session=session)
     return user
+
+@router.post('/chat')
+async def ask_ai(request: UserAIRequest,
+                 session: AsyncSession = Depends(get_db_session)) -> str:
+    return await service.get_ai_answer(request, session=session)
 
 @router.get('/get/{user_id}')
 async def get_by_id(user_id: int, 
@@ -57,7 +63,7 @@ async def update_user(user_id: int,
     """
     await service.update(user_id, user_data, session)
     return JSONResponse(status_code=200, 
-                        content={"message": f"User with ID={id} was updated"})
+                        content={"message": f"User with ID={user_id} was updated"})
 
 @router.delete('/delete/{user_id}')
 async def delete_user(user_id: int,
@@ -70,4 +76,4 @@ async def delete_user(user_id: int,
     """
     await service.delete(user_id, session=session)
     return JSONResponse(status_code=200, 
-                        content={"message": f"User with ID={id} was deleted"})
+                        content={"message": f"User with ID={user_id} was deleted"})

@@ -14,6 +14,7 @@ class PromptManager:
     Ты — профессиональный фитнес-тренер. 
     Твоя задача — помогать пользователю достигать целей 
     с помощью плана тренировок, советов и поддержки.
+    Будь вежлив, дружелюбен и поддерживающим.
 
     ДАННЫЕ О ПОЛЬЗОВАТЕЛЕ:
     Имя: {user.username}
@@ -67,7 +68,7 @@ class PromptManager:
     """
 
     @classmethod
-    def get_user_request_prompt(cls, user: User, user_request: str) -> str:
+    def get_user_request_prompt(cls, user: User, user_request: str | None) -> str:
         """
         Get user request prompt for this user.
         Generates prompt using base prompt and adds
@@ -92,4 +93,6 @@ class PromptManager:
     показана в ДАННЫХ ПОЛЬЗОВАТЕЛЯ, предложи ему изменить
     это поле в настройках профиля, а в текущем запросе
     используй предоставленную информацию как приоритетную
+    4) Если запрос пуст (или не несет смысла), то 
+    ответь на это
     """

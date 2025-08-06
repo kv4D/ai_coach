@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from schemas.ai_request import UserAIRequest
 from schemas.training_plan import TrainingPlan, TrainingPlanInput
 from db.database import get_db_session
 from service import training_plan as service
@@ -22,6 +23,12 @@ async def create_user_plan(user_id: int,
         session (`AsyncSession`): an asynchronous database session
     """
     training_plan = await service.create(user_id, plan_data, session=session)
+    return training_plan
+
+@router.post('/generate')
+async def generate_user_plan(request: UserAIRequest,
+                             session: AsyncSession = Depends(get_db_session)):
+    training_plan = await service.generate_plan(request, session=session)
     return training_plan
 
 @router.get('/get/user/{user_id}')

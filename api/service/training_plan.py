@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from exceptions import NotFoundError
 from db.crud.crud import TrainingPlanCRUD
 from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
+from schemas.ai_request import UserAIRequest
 from service.user import get_by_id
 from llm.ai_client import AIClient
 
@@ -30,17 +31,17 @@ async def create(user_id: int,
         if 'foreign key' in error_message:
             raise NotFoundError(f"No user with such ID.")
 
-async def generate_plan(user_id, session: AsyncSession):
+async def generate_plan(request: UserAIRequest, session: AsyncSession):
     """Generate TrainingPlan using AI.
 
     Args:
-        user_id (`int`)
+        request (`UserAIRequest`): data for making request
         session (`AsyncSession`): an asynchronous database session
     """
-    user = await get_by_id(user_id, session)
+    user = await get_by_id(request.user_id, session)
     plan_description = await AIClient.generate_user_plan(user)
     plan = TrainingPlanInput(plan_description=plan_description)
-    return await create(user_id, plan, session=session)
+    return await create(request.user_id, plan, session=session)
 
 async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
     """Get the training plan for the user in the database.

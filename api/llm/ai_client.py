@@ -46,7 +46,7 @@ class AIClient:
         return response
     
     @classmethod
-    async def generate_user_response(cls, user: User, user_request: str):
+    async def generate_user_response(cls, user: User, user_request: str | None):
         """
         Generate response for user request.
         User can ask question, ask for help,

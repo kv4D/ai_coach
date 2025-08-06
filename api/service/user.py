@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from db.crud.crud import UserCRUD
 from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
+from schemas.ai_request import UserAIRequest
 from exceptions import AlreadyExistError, NotFoundError
 from llm.ai_client import AIClient
 
@@ -88,8 +89,7 @@ async def delete(user_id: int,
         await session.rollback()
         raise
 
-async def get_ai_answer(user_id: int,
-                        user_request: str,
+async def get_ai_answer(request: UserAIRequest,
                         session: AsyncSession) -> str:
     """Answer user's request/answer with AI.
     
@@ -98,6 +98,6 @@ async def get_ai_answer(user_id: int,
         user_request (`str`): user's message to AI
         session (`AsyncSession`): an asynchronous database session
     """
-    user = await get_by_id(user_id, session)
-    response = await AIClient.generate_user_response(user, user_request)
+    user = await get_by_id(request.user_id, session)
+    response = await AIClient.generate_user_response(user, request.request)
     return response
