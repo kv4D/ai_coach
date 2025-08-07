@@ -34,12 +34,19 @@ async def create(user_id: int,
 async def generate_plan(request: UserAIRequest, session: AsyncSession):
     """Generate TrainingPlan using AI.
 
+    You can generate a new plan or update an existing one.
+
     Args:
         request (`UserAIRequest`): data for making request
         session (`AsyncSession`): an asynchronous database session
     """
     user = await get_by_id(request.user_id, session)
-    plan_description = await AIClient.generate_user_plan(user)
+    plan_description = await AIClient.generate_user_plan(user, request.content)
+
+    if user.training_plan:
+        plan = TrainingPlanUpdate(plan_description=plan_description)
+        return await update_user_plan(user.id, plan, session=session)
+    
     plan = TrainingPlanInput(plan_description=plan_description)
     return await create(request.user_id, plan, session=session)
 

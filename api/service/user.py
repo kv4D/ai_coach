@@ -116,5 +116,5 @@ async def get_ai_answer(request: UserAIRequest,
         session (`AsyncSession`): an asynchronous database session
     """
     user = await get_by_id(request.user_id, session)
-    response = await AIClient.generate_user_response(user, request.request)
+    response = await AIClient.generate_user_response(user, request.content)
     return response
