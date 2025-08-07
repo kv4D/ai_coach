@@ -24,7 +24,7 @@ async def create_user(user_data: UserInput,
     return user
 
 @router.post('/chat')
-async def ask_ai(request: UserAIRequest,
+async def chat_with_ai(request: UserAIRequest,
                  session: AsyncSession = Depends(get_db_session)) -> str:
     return await service.get_ai_answer(request, session=session)
 

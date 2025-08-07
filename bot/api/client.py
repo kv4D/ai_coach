@@ -40,6 +40,21 @@ class APIClient:
         Use on bot **shutdown**.
         """
         await self.session.close()
+        
+    async def get_user_request_response(self, user_id: int, request: str):
+        """Get AI response on user's request using the API.
+
+        Args:
+            user_id (`int`): user Telegram ID
+            request (`str`): text message from user to AI
+        """
+        request_body = {
+            "user_id": user_id,
+            "content": request
+        }
+        async with self.session.post("/user/chat", json=request_body) as response:
+            await check_response_status(response)
+            return await response.text()
 
     async def create_user(self, user: User):
         """Create user entry in API's database.

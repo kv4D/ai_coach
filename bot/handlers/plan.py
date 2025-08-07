@@ -14,18 +14,6 @@ from states.create_plan import CreatePlan
 router = Router()
 
 
-@router.message(Command('generate_plan'), Main.main)
-async def handle_generate_plan_command(message: Message, state: FSMContext):
-    """
-    Handle /generate_plan command.
-
-    Set new state and ask the user to send message with extra data
-    for plan generation.
-    """
-    await message.answer('Отлично, я буду использовать вашу информацию, указанную в профиле\n'
-                         'Дополнительно вы можете рассказать больше для желаемого плана')
-    await state.set_state(CreatePlan.sending_request)
-
 @router.message(F.text, CreatePlan.sending_request)
 async def handle_plan_request(message: Message, 
                               state: FSMContext, 
