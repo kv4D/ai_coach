@@ -81,8 +81,9 @@ class APIClient:
             field_name (`str`): User model field name
             value (`Any`): new value for the field
         """
+        request_body = {field_name: value}
         async with self.session.patch(f"/user/update/{user_id}", 
-                                      json={field_name: value}) as response:
+                                      json=request_body) as response:
             await check_response_status(response)
 
     async def update_user(self, user: User):
@@ -118,7 +119,20 @@ class APIClient:
             levels = sorted([ActivityLevel(**level) for level in data], 
                             key=lambda x: x.level)
             return levels
+    
+    async def create_user_training_plan(self, user_id: int, user_request: str):
+        """Create a training plan for user using API.
 
+        The API creates training plans with AI.
+        """
+        request_body = {
+            'user_id': user_id,
+            'content': user_request
+        }
+        async with self.session.post(f"plan/generate",
+                                     json=request_body) as response:
+            await check_response_status(response)
+    
     async def get_user_training_plan(self, user_id: int) -> str | None:
         """Get user's training plan from API's database.
 

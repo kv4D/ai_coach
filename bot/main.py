@@ -11,6 +11,7 @@ from api.client import APIClient
 from handlers.start import router as start_router
 from handlers.main import router as main_router
 from handlers.profile import router as profile_router
+from handlers.plan import router as plan_router
 
 
 def create_storage() -> RedisStorage:
@@ -38,7 +39,8 @@ async def main():
     # include routers here
     dispatcher.include_routers(start_router, 
                                main_router,
-                               profile_router)
+                               profile_router,
+                               plan_router)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dispatcher.start_polling(bot, api_client=client)

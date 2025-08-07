@@ -7,7 +7,7 @@ from api.client import APIClient
 from models.activity_level import ActivityLevel
 from models.user import User
 from filters.user import UserDataCallbackFactory
-from service.activity_levels import get_activity_levels_description
+from service.service import get_activity_levels_description
 from keyboards.profile import get_profile_kb
 from keyboards.common import get_activity_level_kb, get_gender_kb
 from states.main import Main

@@ -3,8 +3,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
-from service.user import create_user
-from service.activity_levels import get_activity_levels_description
+from service.service import get_activity_levels_description, create_user
 from api.client import APIClient
 from states.create_profile import CreateProfile
 from states.main import Main

@@ -28,8 +28,7 @@ async def create_user_plan(user_id: int,
 @router.post('/generate')
 async def generate_user_plan(request: UserAIRequest,
                              session: AsyncSession = Depends(get_db_session)):
-    training_plan = await service.generate_plan(request, session=session)
-    return training_plan
+    await service.generate_plan(request, session=session)
 
 @router.get('/get/user/{user_id}')
 async def get_user_plan(user_id: int,

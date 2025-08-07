@@ -1,4 +1,4 @@
-"""Handlers for main state."""
+"""Handlers for the main state."""
 from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -36,18 +36,3 @@ async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClie
     else:
         await message.answer('Вот <b>ваш план</b>')
         await message.answer(training_plan)
-
-@router.message(Command('generate_plan'), Main.main)
-async def handle_generate_plan_command(message: Message, bot: Bot):
-    """
-    Handle /generate_plan command.
-
-    Uses API to create user's plan with his data.
-    Gives feedback upon creation.
-    """
-    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        await message.answer('Генерирую план, ожидайте')
-        # create user plan here
-        training_plan = 'some training plan'
-    await message.answer('Вот ваш план')
-    await message.answer(training_plan)
