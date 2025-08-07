@@ -1,7 +1,9 @@
-"""Bot config"""
+"""Bot config."""
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# .env path
+# you can change it
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / '.env'
 

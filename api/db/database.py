@@ -1,3 +1,4 @@
+"""Database related tools. Use to get sessions."""
 from functools import wraps
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from config import config
@@ -11,17 +12,22 @@ session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 async def get_db_session():
     """
-    Provides session to endpoint as a dependency.
+    Provides session to an endpoint as a dependency.
+
     Don't forget to use 'session.commit()' when
     making changes in database.
+
+    Otherwise
+    changes will be lost.
     """
     async with session_maker() as session:
             yield session
 
 def connect(commit: bool = True):
     """
+    ! DON'T USE, THIS IS AN EXAMPLE !
+
     Decorator creates database session for a method and closes it.
-    Experimental feature, use get_db_session() instead.
     """
     def decorator(func):
         @wraps(func)

@@ -1,12 +1,17 @@
+"""Command menu buttons setters."""
 from aiogram import Bot
 from aiogram.types import BotCommand
 
 
-async def set_main_menu(bot: Bot):
-    """Set up menu with bot commands in main menu."""    
-    main_menu_commands = [
-        BotCommand(command='/start',
-                   description='Создать профиль с нуля'),
+async def set_menu(bot: Bot):
+    """Set up menu with bot commands.
+
+    You should use this when user is **authorized**.
+
+    Args:
+        bot (`Bot`): your bot object    
+    """    
+    menu_commands = [
         BotCommand(command='/my_plan',
                    description='Просмотреть план тренировок'),
         BotCommand(command='/generate_plan',
@@ -15,5 +20,7 @@ async def set_main_menu(bot: Bot):
                    description='Профиль'),
         BotCommand(command='/help',
                    description='О работе с ботом'),
+        BotCommand(command='/start',
+                   description='Создать профиль с нуля'),
     ]
-    await bot.set_my_commands(main_menu_commands)
+    await bot.set_my_commands(menu_commands)

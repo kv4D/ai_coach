@@ -1,6 +1,11 @@
+"""
+Database Access Objects for CRUD operations.
+
+Created for all models in the database.
+"""
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel as PydanticModel
+from pydantic import BaseModel
 from schemas.training_plan import TrainingPlanUpdate
 from exceptions import AlreadyExistError, NotFoundError
 from .base import BaseCRUD
@@ -8,35 +13,33 @@ from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):
+    """
+    DAO class for CRUD operations with UserModel.
+    """
     _model = UserModel
 
     @classmethod
-    async def create(cls, data: PydanticModel, session: AsyncSession) -> UserModel:
-        """Create a model entry in the database.
-
-        Args:
-            session (AsyncSession): asynchronous database session
-
-        Returns:
-            TDBModel: created model entry
-        """
+    async def create(cls, data: BaseModel, session: AsyncSession) -> UserModel:
         entry = await super().create(data, session=session)
+        # need to additionally refresh database relations
         await session.refresh(entry, attribute_names=["training_plan"])
         return entry
 
 class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
+    """
+    DAO class for CRUD operations with TrainingPlanModel.
+    """
     _model = TrainingPlanModel
 
     @classmethod
-    async def get_by_user_id(cls, user_id: int, session: AsyncSession) -> None | TrainingPlanModel:
-        """Get the training plan for a user by their id.
+    async def get_by_user_id(cls, 
+                             user_id: int, 
+                             session: AsyncSession) -> None | TrainingPlanModel:
+        """Get a training plan for a user using their ID.
 
         Args:
-            user_id (int): user id in database
-            session (AsyncSession): asynchronous database session
-
-        Returns:
-            None | TrainingPlanModel: entry or None
+            user_id (`int`)
+            session (`AsyncSession`): an asynchronous database session
         """
         query = select(cls._model).filter_by(user_id=user_id)
         result = await session.execute(query)
@@ -48,16 +51,13 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     @classmethod
     async def create_for_user(cls,
                               user_id: int,
-                              plan_data: PydanticModel,
+                              plan_data: BaseModel,
                               session: AsyncSession) -> TrainingPlanModel:
         """Create a training plan for the user by their id.
 
         Args:
-            user_id (int): user id in database
-            session (AsyncSession): asynchronous database session
-
-        Returns:
-            None | TrainingPlanModel: entry or None
+            user_id (`int`)
+            session (`AsyncSession`): an asynchronous database session
         """
         # check for existing plan
         result = await session.execute(select(cls._model).filter_by(user_id=user_id))
@@ -75,7 +75,14 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     async def update_by_user_id(cls,
                                 user_id: int,
                                 plan_data: TrainingPlanUpdate,
-                                session: AsyncSession):
+                                session: AsyncSession) -> TrainingPlanModel:
+        """Update a training plan with new data by the user_id field.
+
+        Args:
+            user_id (`int`)
+            plan_data (`TrainingPlanUpdate`): a pydantic model instance with new data
+            session (`AsyncSession`): an asynchronous database session
+        """
         update_data_dict = plan_data.model_dump(exclude_unset=True)
 
         query = select(cls._model).filter_by(user_id=user_id)
@@ -96,7 +103,13 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     @classmethod
     async def delete_by_user_id(cls,
                                 user_id: int,
-                                session: AsyncSession):
+                                session: AsyncSession) -> TrainingPlanModel:
+        """Delete an entry by the user_id field.
+
+        Args:
+            user_id (`int`)
+            session (`AsyncSession`): an asynchronous database session
+        """
         query = select(cls._model).filter_by(user_id=user_id)
         entry = await session.execute(query)
         entry = entry.scalar_one_or_none()
@@ -111,4 +124,7 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
 
 
 class ActivityLevelCRUD(BaseCRUD[ActivityLevelModel]):
+    """
+    DAO class for CRUD operations with ActivityLevelModel.
+    """
     _model = ActivityLevelModel

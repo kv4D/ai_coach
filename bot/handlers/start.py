@@ -2,15 +2,13 @@ from aiogram import Router, F, Bot
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.i18n import gettext as _
 from aiogram.utils.chat_action import ChatActionSender
-from service.user import create_user
-from service.activity_levels import get_activity_levels_description
+from service.service import get_activity_levels_description, create_user
 from api.client import APIClient
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.common import get_gender_kb, get_activity_level_kb
-from keyboards.menu_buttons import set_main_menu
+from keyboards.menu_buttons import set_menu
 from models.user import User
 from models.activity_level import ActivityLevel
 
@@ -18,7 +16,7 @@ from models.activity_level import ActivityLevel
 router = Router()
 
 
-@router.message(CommandStart(), StateFilter(None, Main.main_menu))
+@router.message(CommandStart(), StateFilter(None, Main.main))
 async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
     Handle /start command.
@@ -150,5 +148,5 @@ async def process_goal(message: Message,
                          '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
                          reply_markup=ReplyKeyboardRemove())
     await state.clear()
-    await set_main_menu(bot)
-    await state.set_state(Main.main_menu)
+    await set_menu(bot)
+    await state.set_state(Main.main)

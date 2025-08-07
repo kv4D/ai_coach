@@ -1,4 +1,4 @@
-"""Custom exceptions for API."""
+"""Custom exceptions for the API."""
 class NotFoundError(Exception):
     """There is no data."""
 

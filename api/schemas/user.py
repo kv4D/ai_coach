@@ -21,7 +21,7 @@ class User(BaseModel):
     Uses metric system for fields (kilograms, centimeters, etc).
     """
     id: int = Field(frozen=True)
-    username: Optional[str] = Field(default='Anon')
+    username: Optional[str] = Field(default='Пользователь')
     age: int = Field(default=18, gt=0, lt=100)
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
     height_cm: float = Field(default=170, gt=60.0, lt= 250.0)

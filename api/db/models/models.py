@@ -1,10 +1,26 @@
+"""All models of the API database."""
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import Optional
-from db.models.base_model import BaseModel
+from db.models.base_model import BaseDatabaseModel
 
 
-class UserModel(BaseModel):
+class UserModel(BaseDatabaseModel):
+    """
+    User database model.
+    
+    Fields:
+    - id (PK)
+    - username - optional
+    - age
+    - weight_kg - use kilograms
+    - height_cm - use centimeters 
+    - gender
+    - goal - a string with user's goal of
+    training/activity
+    - activity level (FK) - user's activity level (from ActivityLevel)
+    - training_plan - user's training plan
+    """
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True, 
@@ -36,7 +52,17 @@ class UserModel(BaseModel):
                                                               cascade="all, delete-orphan") 
 
 
-class ActivityLevelModel(BaseModel):
+class ActivityLevelModel(BaseDatabaseModel):
+    """
+    Activity database model.
+    
+    Fields:
+    - level (PK) - a numerical representation of
+    the level (lower the number, lower the activity)
+    - description - the text that describes level's 
+    features
+    - name - a string that shortly describes the level
+    """
     __tablename__ = 'activity_levels'
 
     level: Mapped[int] = mapped_column(primary_key=True)
@@ -50,7 +76,19 @@ class ActivityLevelModel(BaseModel):
                                                    foreign_keys="UserModel.activity_level")
 
 
-class TrainingPlanModel(BaseModel):
+class TrainingPlanModel(BaseDatabaseModel):
+    """
+    Training plan database model.
+
+    A part of the User model, made separate
+    for convenience.
+    
+    Fields:
+    - id (PK)
+    - plan description - a string with the training plan
+    content
+    - user_id (FK) - a foreign key, the user who owns the plan
+    """
     __tablename__ = 'training_plans'
 
     id: Mapped[int] = mapped_column(primary_key=True, 
