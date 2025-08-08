@@ -17,8 +17,7 @@ async def get_db_session():
     Don't forget to use 'session.commit()' when
     making changes in database.
 
-    Otherwise
-    changes will be lost.
+    Otherwise changes will be lost.
     """
     async with session_maker() as session:
             yield session

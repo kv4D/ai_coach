@@ -1,10 +1,11 @@
 """Base Database Access Object for CRUD operations."""
+from typing import Generic, TypeVar, Iterable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
-from typing import Generic, TypeVar, Iterable
 from exceptions import NotFoundError
 from db.models.base_model import BaseDatabaseModel
+
 
 # type parameter for BaseModel children
 TDBModel = TypeVar("TDBModel", bound=BaseDatabaseModel)
@@ -18,7 +19,7 @@ class BaseCRUD(Generic[TDBModel]):
     _model: type[TDBModel]
 
     @classmethod
-    async def create(cls, data: BaseModel, session: AsyncSession) -> TDBModel:
+    async def create(cls, data: BaseModel, session: AsyncSession):
         """Create an entry in the database.
 
         Args:
@@ -28,12 +29,10 @@ class BaseCRUD(Generic[TDBModel]):
         data_dict = data.model_dump(exclude_unset=True)
         entry = cls._model(**data_dict)
         session.add(instance=entry)
-
         await session.flush()
-        return entry
 
     @classmethod
-    async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel]:
+    async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel] | None:
         """Get all model's entries in the database.
 
         Args:
@@ -41,9 +40,7 @@ class BaseCRUD(Generic[TDBModel]):
         """
         query = select(cls._model).filter_by()
         result = await session.execute(query)
-        # extract as model's objects
         entries = result.scalars().all()
-
         return entries
 
     @classmethod
@@ -57,14 +54,14 @@ class BaseCRUD(Generic[TDBModel]):
         return await session.get(cls._model, entry_id)
 
     @classmethod
-    async def update_by_id(cls, 
-                           entry_id: int, 
-                           update_data: BaseModel, 
-                           session: AsyncSession) -> TDBModel:
+    async def update_by_id(cls,
+                           entry_id: int,
+                           update_data: BaseModel,
+                           session: AsyncSession):
         """Update an entry with new data by its ID/primary key.
 
         Args:
-            entry_id (`int`): entry's ID** OR primary key
+            entry_id (`int`): entry's ID OR primary key
             update_data (`pydantic.BaseModel`): a pydantic model instance with new data
             session (`AsyncSession`): an asynchronous database session
         """
@@ -73,12 +70,11 @@ class BaseCRUD(Generic[TDBModel]):
 
         if entry is None:
             raise NotFoundError(
-                f"There is no {cls._model.__tablename__} entry with such ID: {entry_id}.")
+                f"There is no {cls._model.__name__.lower()} entry with such ID: {entry_id}.")
 
         for key, value in update_data_dict.items():
             setattr(entry, key, value)
         await session.flush()
-        return entry
 
     @classmethod
     async def delete_by_id(cls, entry_id: int, session: AsyncSession) -> TDBModel:

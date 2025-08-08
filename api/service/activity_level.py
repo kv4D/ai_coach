@@ -1,7 +1,7 @@
 """Service layer logic for ActivityLevel."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from exceptions import AlreadyExistError, NotFoundError
+from exceptions import AlreadyExistError, NotFoundError, UnexpectedError
 from db.crud.crud import ActivityLevelCRUD
 from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
 from schemas.utils import models_validate
@@ -18,11 +18,17 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession) -> Activ
         level = await ActivityLevelCRUD.create(level_data, session=session)
         await session.commit()
         return ActivityLevel.model_validate(level)
-    except IntegrityError as e:
+    except IntegrityError as exc:
         await session.rollback()
-        error_message = str(e).lower()
+        error_message = str(exc).lower()
         if 'unique' in error_message:
-            raise AlreadyExistError('There is already an activity level with such ID.') from e
+            raise AlreadyExistError(
+                f'There is already an activity level with this number: {level_data.level}.'
+                ) from exc
+        raise
+    except Exception as exc:
+        await session.rollback()
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def get_by_level(level: int, session: AsyncSession) -> ActivityLevel:
     """Get info about the level in the database by its level number.
@@ -64,6 +70,9 @@ async def update(level: int,
     except NotFoundError:
         await session.rollback()
         raise
+    except Exception as exc:
+        await session.rollback()
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def delete(level: int,
                  session: AsyncSession) -> None:    
@@ -79,3 +88,6 @@ async def delete(level: int,
     except NotFoundError:
         await session.rollback()
         raise
+    except Exception as exc:
+        await session.rollback()
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
