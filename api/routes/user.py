@@ -14,53 +14,38 @@ router = APIRouter(prefix=f"/user")
 @router.post('/create')
 async def create_user(user_data: UserInput,
                       session: AsyncSession = Depends(get_db_session)) -> User | None:
-    """Create a new user.
-
-    Args:
-        user_data (`UserInput`): 
-        session (`AsyncSession`): an asynchronous database session
-    """
+    """Create a new user."""
     user = await service.create(user_data, session=session)
     return user
 
 @router.post('/chat')
 async def chat_with_ai(request: UserAIRequest,
-                 session: AsyncSession = Depends(get_db_session)) -> str:
+                       session: AsyncSession = Depends(get_db_session)) -> str:
+    """Send message to AI.
+
+    AI-coach will take user's request, analyze data about the user
+    and send an answer (advise, help, etc.).
+    """
     return await service.get_ai_answer(request, session=session)
 
 @router.get('/get/{user_id}')
 async def get_by_id(user_id: int, 
                     session: AsyncSession = Depends(get_db_session)) -> User:
-    """Get the user by ID.
-    
-    Args:
-        user_id (`int`)
-        session (`AsyncSession`): an asynchronous database session
-    """
+    """Get the user by ID."""
     user = await service.get_by_id(user_id, session=session)
     return user
 
 @router.get('/all')
 async def get_all(session: AsyncSession = Depends(get_db_session)) -> list[User]:
-    """Get all users in the database.  
-    
-    Args:
-        session (`AsyncSession`): an asynchronous database session
-    """
+    """Get all users in the database."""
     users = await service.get_all(session=session)
     return users
 
 @router.patch('/update/{user_id}')
-async def update_user(user_id: int, 
+async def update_user(user_id: int,
                       user_data: UserUpdate,
                       session: AsyncSession = Depends(get_db_session)) -> JSONResponse:
-    """Update the user by their ID.
-        
-    Args:
-        user_id (`int`)
-        user_data (`UserUpdate`): new data for the user
-        session (`AsyncSession`): an asynchronous database session
-    """
+    """Update the user by their ID."""
     await service.update(user_id, user_data, session)
     return JSONResponse(status_code=200, 
                         content={"message": f"User with ID={user_id} was updated"})
@@ -68,12 +53,7 @@ async def update_user(user_id: int,
 @router.delete('/delete/{user_id}')
 async def delete_user(user_id: int,
                       session: AsyncSession = Depends(get_db_session)) -> JSONResponse:
-    """Delete the user by their ID.
-            
-    Args:
-        user_id (`int`)
-        session (`AsyncSession`): an asynchronous database session
-    """
+    """Delete the user by their ID."""
     await service.delete(user_id, session=session)
     return JSONResponse(status_code=200, 
                         content={"message": f"User with ID={user_id} was deleted"})
