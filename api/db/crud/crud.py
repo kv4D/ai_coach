@@ -7,15 +7,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from schemas.training_plan import TrainingPlanUpdate
-from exceptions import AlreadyExistError, NotFoundError
+from exceptions import NotFoundError
 from .base import BaseCRUD
 from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):
-    """
-    DAO class for CRUD operations with UserModel.
-    """
+    """DAO class for CRUD operations with UserModel."""
     _model = UserModel
 
     @classmethod
@@ -43,7 +41,6 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         """
         query = select(cls._model).filter_by(user_id=user_id)
         result = await session.execute(query)
-
         # there can be only one entry or none
         entry = result.scalar_one_or_none()
         return entry
@@ -52,24 +49,17 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     async def create_for_user(cls,
                               user_id: int,
                               plan_data: BaseModel,
-                              session: AsyncSession) -> TrainingPlanModel:
+                              session: AsyncSession):
         """Create a training plan for the user by their id.
 
         Args:
             user_id (`int`)
             session (`AsyncSession`): an asynchronous database session
         """
-        # check for existing plan
-        result = await session.execute(select(cls._model).filter_by(user_id=user_id))
-        exists = result.scalar_one_or_none()
-        if exists:
-            raise AlreadyExistError(f"User with ID={user_id} already has a plan.")
-
-        plan_data_dict = plan_data.model_dump()
+        plan_data_dict = plan_data.model_dump(exclude_unset=True)
         instance = cls._model(**plan_data_dict, user_id=user_id)
         session.add(instance=instance)
         await session.flush()
-        return instance
 
     @classmethod
     async def update_by_user_id(cls,
@@ -84,12 +74,8 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
             session (`AsyncSession`): an asynchronous database session
         """
         update_data_dict = plan_data.model_dump(exclude_unset=True)
-
-        query = select(cls._model).filter_by(user_id=user_id)
-        result = await session.execute(query)
-
         # there can be only one entry or none
-        entry = result.scalar_one_or_none()
+        entry = await session.query(cls._model).filter_by(user_id=user_id).scalar_one_or_none()
 
         if entry is None:
             raise NotFoundError(
@@ -110,9 +96,7 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
             user_id (`int`)
             session (`AsyncSession`): an asynchronous database session
         """
-        query = select(cls._model).filter_by(user_id=user_id)
-        entry = await session.execute(query)
-        entry = entry.scalar_one_or_none()
+        entry = await session.query(cls._model).filter_by(user_id=user_id).scalar_one_or_none()
 
         if entry is None:
             raise NotFoundError(

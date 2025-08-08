@@ -1,4 +1,5 @@
 """Service layer logic for User."""
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from db.crud.crud import ActivityLevelCRUD, UserCRUD
@@ -6,7 +7,8 @@ from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
 from schemas.ai_request import UserAIRequest
 from schemas.activity_level import ActivityLevel
-from exceptions import AlreadyExistError, NotFoundError
+from exceptions import AlreadyExistError, NotFoundError, ValidationError, \
+    UnexpectedError
 from llm.ai_client import AIClient
 
 
@@ -22,17 +24,18 @@ async def create(user_data: UserInput, session: AsyncSession) -> User | None:
         user = User.model_validate(user)
         await session.commit()
         return user
-    except IntegrityError as e:
+    except IntegrityError as exc:
         await session.rollback()
-        error_message = str(e).lower()
-
+        error_message = str(exc).lower()
         if 'foreign key' in error_message:
-            raise NotFoundError("No such activity level.") from e
+            raise NotFoundError(f"No such activity level: {user_data.activity_level}.") from exc
         if 'unique' in error_message:
-            raise AlreadyExistError('There is already a user with such ID.') from e
-    except:
+            raise AlreadyExistError(f'There is already a user with such ID: {user.id}.') from exc
+    except PydanticValidationError as exc:
+        raise ValidationError(f"Validation error:\n{str(exc)}") from exc
+    except Exception as exc:
         await session.rollback()
-        raise
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def set_activity_level(user: User, session: AsyncSession):
     if user.activity_level:
@@ -65,8 +68,9 @@ async def get_by_id(user_id: int, session: AsyncSession) -> User:
         session (`AsyncSession`): an asynchronous database session
     """
     user = await UserCRUD.get_by_id(user_id, session=session)
+
     if user is None:
-        raise NotFoundError("There is no user with such ID.")
+        raise NotFoundError(f"There is no user with such ID: {user_id}.")
 
     user = User.model_validate(user)
     await set_activity_level(user, session=session)
@@ -90,6 +94,9 @@ async def update(user_id: int,
     except NotFoundError:
         await session.rollback()
         raise
+    except Exception as exc:
+        await session.rollback()
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def delete(user_id: int,
                  session: AsyncSession) -> None:
@@ -105,6 +112,9 @@ async def delete(user_id: int,
     except NotFoundError:
         await session.rollback()
         raise
+    except Exception as exc:
+        await session.rollback()
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def get_ai_answer(request: UserAIRequest,
                         session: AsyncSession) -> str:
@@ -114,7 +124,7 @@ async def get_ai_answer(request: UserAIRequest,
         user_id (`int`)
         user_request (`str`): user's message to AI
         session (`AsyncSession`): an asynchronous database session
-    """
+    """    
     user = await get_by_id(request.user_id, session)
     response = await AIClient.generate_user_response(user, request.content)
     return response
