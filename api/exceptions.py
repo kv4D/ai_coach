@@ -41,6 +41,8 @@ async def custom_error_handler(request: Request,
     
     All defined exceptions in `exceptions.py` will be handled here.
     """
+    print(exc.message)
+    print(exc)
     return JSONResponse(
         status_code=exc.status,
         content={

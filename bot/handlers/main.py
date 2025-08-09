@@ -1,7 +1,7 @@
 """Handlers for the main state."""
 from aiogram import Router, Bot, F
-from aiogram.types import Message
-from aiogram.filters import Command
+from aiogram.types import Message, ErrorEvent
+from aiogram.filters import Command, ExceptionTypeFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
 from keyboards.profile import get_profile_kb
@@ -12,6 +12,19 @@ from states.main import Main
 
 router = Router()
 
+@router.error(ExceptionTypeFilter(ValueError), F.update.message.as_("message"))
+async def handle_value_error(event: ErrorEvent, message: Message):
+    """Process value error.
+    
+    Value error is raised when a user inputs
+    wrong data during filling profile fields.
+    
+    Catches errors and sends messages to user.
+    
+    Value error message should be user-friendly for sending in
+    chat.
+    """
+    await message.answer(f"Неверно введены данные\n{str(event.exception)}")
 
 @router.message(Command('help'), Main.main)
 async def handle_help_command(message: Message):

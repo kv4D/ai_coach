@@ -1,8 +1,6 @@
-from aiogram import F, Router, Bot
+from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.chat_action import ChatActionSender
 from api.client import APIClient
 from models.activity_level import ActivityLevel
 from models.user import User
@@ -14,7 +12,6 @@ from states.profile import Profile
 
 
 router = Router()
-
 
 @router.callback_query(UserDataCallbackFactory.filter(F.field.contains("gender")), Main.main)
 async def callback_user_gender_update(callback: CallbackQuery,
@@ -28,7 +25,6 @@ async def callback_user_gender_update(callback: CallbackQuery,
 
     await callback.message.answer('Выберите новое значение',
                                   reply_markup=get_gender_kb())
-
     await callback.answer()
     await state.set_state(Profile.changing_field)
     await state.update_data(field_to_update=field_to_update)
@@ -76,19 +72,15 @@ async def process_new_field_value(message: Message,
     
     Validates new value and updates user data.
     """
-    try:
-        field_to_update = await state.get_value('field_to_update')
-        new_value = message.text
-        if field_to_update == 'activity_level':
-            validated_value = ActivityLevel.validate_level(new_value)
-        else:
-            validated_value = getattr(User, f"validate_{field_to_update}")(new_value)
-        # updating value
-        await api_client.update_user_field(message.from_user.id, 
-                                           field_to_update,
-                                           validated_value)
-        await message.answer(f"Изменения применены успешно")
-        await state.set_state(Main.main)
-    except ValueError as e:
-        await message.answer(str(e))
-        return
+    field_to_update = await state.get_value('field_to_update')
+    new_value = message.text
+    if field_to_update == 'activity_level':
+        validated_value = ActivityLevel.validate_level(new_value)
+    else:
+        validated_value = getattr(User, f"validate_{field_to_update}")(new_value)
+    # updating value
+    await api_client.update_user_field(message.from_user.id, 
+                                        field_to_update,
+                                        validated_value)
+    await message.answer("Изменения применены успешно")
+    await state.set_state(Main.main)

@@ -21,7 +21,6 @@ def create_storage() -> RedisStorage:
     storage = RedisStorage(redis=redis)
     return storage
 
-
 async def main():
     """Start the bot."""
     bot = Bot(token=config.BOT_TOKEN,

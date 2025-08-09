@@ -15,7 +15,6 @@ from models.activity_level import ActivityLevel
 
 router = Router()
 
-
 @router.message(CommandStart(), StateFilter(None, Main.main))
 async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
@@ -38,14 +37,12 @@ async def process_age(message: Message, state: FSMContext):
     Process user's age.
     If everything is OK: try to get gender.
     """
-    try:
-        age = User.validate_age(message.text)
-        await message.answer('Укажите ваш <b>пол</b>',
-                             reply_markup=get_gender_kb())
-        await state.update_data(age=age)
-        await state.set_state(CreateProfile.sending_gender)
-    except ValueError as e:
-        await message.answer(str(e))
+    age = User.validate_age(message.text)
+    keyboard = get_gender_kb()
+    await message.answer('Укажите ваш <b>пол</b>',
+                         reply_markup=keyboard)
+    await state.update_data(age=age)
+    await state.set_state(CreateProfile.sending_gender)
 
 
 @router.message(F.text, CreateProfile.sending_gender)
@@ -54,14 +51,11 @@ async def process_gender(message: Message, state: FSMContext):
     Process user's gender.
     If everything is OK: try to get height.
     """
-    try:
-        gender = User.validate_gender(message.text)
-        await state.update_data(gender=gender)
-        await message.answer('А теперь введите ваш <b>рост в сантиметрах</b>',
-                            reply_markup=ReplyKeyboardRemove())
-        await state.set_state(CreateProfile.sending_height)
-    except ValueError as e:
-        await message.answer(str(e))
+    gender = User.validate_gender(message.text)
+    await state.update_data(gender=gender)
+    await message.answer('А теперь введите ваш <b>рост в сантиметрах</b>',
+                        reply_markup=ReplyKeyboardRemove())
+    await state.set_state(CreateProfile.sending_height)
 
 
 @router.message(F.text, CreateProfile.sending_height)
@@ -70,66 +64,57 @@ async def process_height(message: Message, state: FSMContext):
     Process user's height.
     If everything is OK: try to get weight.
     """
-    try:
-        height = User.validate_height_cm(message.text)
-        await message.answer('Укажите ваш <b>вес в килограммах</b>',
-                            reply_markup=ReplyKeyboardRemove())
-        await state.update_data(height_cm=height)
-        await state.set_state(CreateProfile.sending_weight)
-    except ValueError as e:
-        await message.answer(str(e))
+    height = User.validate_height_cm(message.text)
+    await message.answer('Укажите ваш <b>вес в килограммах</b>',
+                        reply_markup=ReplyKeyboardRemove())
+    await state.update_data(height_cm=height)
+    await state.set_state(CreateProfile.sending_weight)
 
 
 @router.message(F.text, CreateProfile.sending_weight)
-async def process_weight(message: Message, 
-                         state: FSMContext, 
-                         bot: Bot, 
+async def process_weight(message: Message,
+                         state: FSMContext,
+                         bot: Bot,
                          api_client: APIClient):
     """
     Process user's weight.
     If everything is OK: try to get activity level.
     """
-    try:
-        weight = User.validate_weight_kg(message.text)
-        async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-            levels_info = await get_activity_levels_description(api_client)
+    weight = User.validate_weight_kg(message.text)
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        levels_info = await get_activity_levels_description(api_client)
 
-            await message.answer('Выберите ваш <b>уровень активности</b>',
-                                reply_markup=ReplyKeyboardRemove())
-            await message.answer(levels_info, 
-                                reply_markup=await get_activity_level_kb(api_client))
-            await state.update_data(weight_kg=weight)
-            await state.set_state(CreateProfile.sending_activity_level)
-    except ValueError as e:
-        await message.answer(str(e))
+        await message.answer('Выберите ваш <b>уровень активности</b>',
+                            reply_markup=ReplyKeyboardRemove())
+
+        keyboard = await get_activity_level_kb(api_client)
+
+        await message.answer(levels_info,
+                            reply_markup=keyboard)
+        await state.update_data(weight_kg=weight)
+        await state.set_state(CreateProfile.sending_activity_level)
 
 
 @router.message(F.text, CreateProfile.sending_activity_level)
-async def process_activity_level(message: Message, 
-                                 state: FSMContext, 
-                                 bot: Bot,
-                                 api_client: APIClient):
+async def process_activity_level(message: Message,
+                                 state: FSMContext):
     """
     Process user's activity level.
     If everything is OK: try to get user's goal.
     """
-    try:
-        activity_level = ActivityLevel.validate_level(message.text)
-        await message.answer('Отлично, теперь расскажите о вашей <b>цели</b>: для чего вы занимаетесь,'
-                            'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
-                            'Если у вас нет цели, то можете так и написать', 
-                            reply_markup=ReplyKeyboardRemove())
-        await state.update_data(activity_level=activity_level)
-        await state.set_state(CreateProfile.sending_goal)
-    except ValueError as e:
-        await message.answer(str(e),
-                             reply_markup=await get_activity_level_kb(api_client))
-    
+    activity_level = ActivityLevel.validate_level(message.text)
+    await message.answer('Отлично, теперь расскажите о вашей <b>цели</b>: для чего вы занимаетесь,'
+                        'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
+                        'Если у вас нет цели, то можете так и написать',
+                        reply_markup=ReplyKeyboardRemove())
+    await state.update_data(activity_level=activity_level)
+    await state.set_state(CreateProfile.sending_goal)
+
 
 @router.message(F.text, CreateProfile.sending_goal)
-async def process_goal(message: Message, 
-                       state: FSMContext, 
-                       bot: Bot, 
+async def process_goal(message: Message,
+                       state: FSMContext,
+                       bot: Bot,
                        api_client: APIClient):
     """
     Process user's goal.
@@ -140,10 +125,10 @@ async def process_goal(message: Message,
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         await state.update_data(goal=message.text)
         user_data = await state.get_data()
-        user = User(**user_data, 
+        user = User(**user_data,
                     id=message.from_user.id)
         await create_user(user, api_client=api_client)
-    
+
     await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе.'
                          '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
                          reply_markup=ReplyKeyboardRemove())

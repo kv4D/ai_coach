@@ -1,5 +1,4 @@
 from api.client import APIClient
-from api.exceptions import AlreadyExistError
 from models.user import User
 
 
@@ -15,7 +14,8 @@ async def create_user(user: User, api_client: APIClient):
     """
     try:
         await api_client.create_user(user)
-    except AlreadyExistError:
+    except Exception as e:
+        print(e)
         # there is a user with this ID, update data
         await api_client.update_user(user)
 

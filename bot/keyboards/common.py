@@ -14,8 +14,7 @@ def get_gender_kb() -> ReplyKeyboardMarkup:
     for gender in GenderEnum:
         builder.button(text=f"{gender.value.capitalize()}")
     builder.adjust(len(GenderEnum))
-    keyboard = builder.as_markup(resize_keyboard=True, 
-                                 one_time_keyboard=True,
+    keyboard = builder.as_markup(resize_keyboard=True,
                                  input_field_placeholder="Нажмите на кнопку для выбора")
     return keyboard
 
@@ -32,7 +31,6 @@ async def get_activity_level_kb(api_client: APIClient) -> ReplyKeyboardMarkup:
     for level in levels:
         builder.button(text=str(level.level))
     builder.adjust(len(levels))
-    keyboard = builder.as_markup(resize_keyboard=True, 
-                                 one_time_keyboard=True,
+    keyboard = builder.as_markup(resize_keyboard=True,
                                  input_field_placeholder="Нажмите на кнопку для выбора")
     return keyboard

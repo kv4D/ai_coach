@@ -13,7 +13,6 @@ from states.create_plan import CreatePlan
 
 router = Router()
 
-
 @router.message(F.text, CreatePlan.sending_request)
 async def handle_plan_request(message: Message, 
                               state: FSMContext, 
