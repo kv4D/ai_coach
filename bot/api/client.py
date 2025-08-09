@@ -80,7 +80,7 @@ class APIClient:
             user = User(**user_data)
             return user
 
-    async def update_user_field(self, 
+    async def update_user_field(self,
                                 user_id: int, 
                                 field_name: str, 
                                 value: Any):
@@ -109,7 +109,7 @@ class APIClient:
         Args:
             user (`User`): new data for the user
         """
-        async with self.session.patch(f"/user/update/{user.id}", 
+        async with self.session.patch(f"/user/update/{user.id}",
                                       json=user.model_dump()) as response:
             await check_response_status(response)
 
@@ -144,7 +144,7 @@ class APIClient:
             'user_id': user_id,
             'content': user_request
         }
-        async with self.session.post(f"plan/generate",
+        async with self.session.post("plan/generate",
                                      json=request_body) as response:
             await check_response_status(response)
     

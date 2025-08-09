@@ -1,7 +1,8 @@
 """Service layer logic for TrainingPlan."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from exceptions import NotFoundError, UnexpectedError
+from pydantic import ValidationError as PydanticValidationError
+from exceptions import NotFoundError, UnexpectedError, ValidationError
 from db.crud.crud import TrainingPlanCRUD
 from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
 from schemas.ai_request import UserAIRequest
@@ -54,6 +55,8 @@ async def update_user_plan(user_id: int,
     except NotFoundError:
         await session.rollback()
         raise
+    except PydanticValidationError as exc:
+        raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc

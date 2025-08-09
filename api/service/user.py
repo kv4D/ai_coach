@@ -29,8 +29,8 @@ async def create(user_data: UserInput, session: AsyncSession) -> User | None:
         error_message = str(exc).lower()
         if 'foreign key' in error_message:
             raise NotFoundError(f"No such activity level: {user_data.activity_level}.") from exc
-        if 'unique' in error_message:
-            raise AlreadyExistError(f'There is already a user with such ID: {user.id}.') from exc
+    except AlreadyExistError as exc:
+        raise AlreadyExistError(f'There is already a user with such ID: {user_data.id}.') from exc
     except PydanticValidationError as exc:
         raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
@@ -88,12 +88,13 @@ async def update(user_id: int,
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        user = await UserCRUD.update_by_id(user_id, user_data, session=session)
+        await UserCRUD.update_by_id(user_id, user_data, session=session)
         await session.commit()
-        return User.model_validate(user)
     except NotFoundError:
         await session.rollback()
         raise
+    except PydanticValidationError as exc:
+        raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc

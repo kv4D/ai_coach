@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
 from keyboards.profile import get_profile_kb
 from api.client import APIClient
-from bot.states.create_plan import CreatePlan
+from states.create_plan import CreatePlan
 from states.main import Main
 
 
@@ -88,3 +88,12 @@ async def handle_user_request(message: Message,
         request = message.text
         ai_response = await api_client.get_user_request_response(user_id, request)
     await message.answer(ai_response)
+
+@router.message(~F.text)
+async def handle_wrong_data_type(message: Message):
+    """Handle not text message.
+    
+    They are not supported by this bot, so we 
+    need to tell about that to users.
+    """
+    await message.answer("Я могу работать только с текстом!")

@@ -1,7 +1,8 @@
 """Service layer logic for ActivityLevel."""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from exceptions import AlreadyExistError, NotFoundError, UnexpectedError
+from pydantic import ValidationError as PydanticValidationError
+from exceptions import AlreadyExistError, NotFoundError, UnexpectedError, ValidationError
 from db.crud.crud import ActivityLevelCRUD
 from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
 from schemas.utils import models_validate
@@ -64,12 +65,13 @@ async def update(level: int,
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        level_model = await ActivityLevelCRUD.update_by_id(level, level_data, session=session)
+        await ActivityLevelCRUD.update_by_id(level, level_data, session=session)
         await session.commit()
-        return ActivityLevel.model_validate(level_model)
     except NotFoundError:
         await session.rollback()
         raise
+    except PydanticValidationError as exc:
+        raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
