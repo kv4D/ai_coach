@@ -8,9 +8,10 @@ from api.client import APIClient
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.common import get_gender_kb, get_activity_level_kb
-from keyboards.menu_buttons import set_menu
+from keyboards.commands import set_menu
 from models.user import User
 from models.activity_level import ActivityLevel
+from utils import get_command_descriptions
 
 
 router = Router()
@@ -25,9 +26,9 @@ async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
     """
     await state.clear()
     await bot.delete_my_commands()
-    await message.answer('Привет, я буду помогать вам!\nДавайте заполним информацию о вас',
+    await message.answer('Привет, я буду помогать вам 👋\nДавайте заполним информацию о вас 📋',
                          reply_markup=ReplyKeyboardRemove())
-    await message.answer('Введите ваш <b>возраст</b>')
+    await message.answer('Введите ваш <b>возраст</b> 🌱')
     await state.set_state(CreateProfile.sending_age)
 
 
@@ -39,7 +40,7 @@ async def process_age(message: Message, state: FSMContext):
     """
     age = User.validate_age(message.text)
     keyboard = get_gender_kb()
-    await message.answer('Укажите ваш <b>пол</b>',
+    await message.answer('Укажите ваш <b>пол</b> ♀️♂️',
                          reply_markup=keyboard)
     await state.update_data(age=age)
     await state.set_state(CreateProfile.sending_gender)
@@ -53,7 +54,7 @@ async def process_gender(message: Message, state: FSMContext):
     """
     gender = User.validate_gender(message.text)
     await state.update_data(gender=gender)
-    await message.answer('А теперь введите ваш <b>рост в сантиметрах</b>',
+    await message.answer('А теперь введите ваш <b>рост в сантиметрах</b> 📏',
                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(CreateProfile.sending_height)
 
@@ -65,7 +66,7 @@ async def process_height(message: Message, state: FSMContext):
     If everything is OK: try to get weight.
     """
     height = User.validate_height_cm(message.text)
-    await message.answer('Укажите ваш <b>вес в килограммах</b>',
+    await message.answer('Укажите ваш <b>вес в килограммах</b> ⚖️',
                         reply_markup=ReplyKeyboardRemove())
     await state.update_data(height_cm=height)
     await state.set_state(CreateProfile.sending_weight)
@@ -84,7 +85,7 @@ async def process_weight(message: Message,
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         levels_info = await get_activity_levels_description(api_client)
 
-        await message.answer('Выберите ваш <b>уровень активности</b>',
+        await message.answer('Выберите ваш <b>уровень активности</b> 🔋',
                             reply_markup=ReplyKeyboardRemove())
 
         keyboard = await get_activity_level_kb(api_client)
@@ -103,7 +104,7 @@ async def process_activity_level(message: Message,
     If everything is OK: try to get user's goal.
     """
     activity_level = ActivityLevel.validate_level(message.text)
-    await message.answer('Отлично, теперь расскажите о вашей <b>цели</b>: для чего вы занимаетесь,'
+    await message.answer('Отлично, теперь расскажите о вашей <b>цели</b> 🎯: для чего вы занимаетесь,'
                         'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
                         'Если у вас нет цели, то можете так и написать',
                         reply_markup=ReplyKeyboardRemove())
@@ -129,8 +130,9 @@ async def process_goal(message: Message,
                     id=message.from_user.id)
         await create_user(user, api_client=api_client)
 
-    await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе.'
-                         '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок',
+    await message.answer('Начало положено!\nМы собрали всю информацию и готовы к работе 💯'
+                         '\n\nВоспользуйтесь меню\nСоветую для начала создать план тренировок'
+                         f'Список команд:\n{await get_command_descriptions(bot)}',
                          reply_markup=ReplyKeyboardRemove())
     await state.clear()
     await set_menu(bot)

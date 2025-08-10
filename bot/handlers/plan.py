@@ -24,6 +24,6 @@ async def handle_plan_request(message: Message,
                                         request,
                                         api_client=api_client)
         training_plan = await api_client.get_user_training_plan(user_id)
-    await message.answer('Ваш план готов!')
+    await message.answer('Ваш план готов ✅')
     await message.answer(training_plan)
     await state.set_state(Main.main)

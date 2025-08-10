@@ -8,6 +8,7 @@ from keyboards.profile import get_profile_kb
 from api.client import APIClient
 from states.use_ai import UseAI
 from states.main import Main
+from utils import get_command_descriptions
 
 
 router = Router()
@@ -24,7 +25,7 @@ async def handle_value_error(event: ErrorEvent, message: Message):
     Value error message should be user-friendly for sending in
     chat.
     """
-    await message.answer(f"Неверно введены данные\n{str(event.exception)}")
+    await message.answer(f"Неверно введены данные ❌\n\n❗ {str(event.exception)} ❗")
 
 @router.message(UseAI.generating_answer)
 async def handle_message_during_generation(message: Message):
@@ -36,17 +37,27 @@ async def handle_message_during_generation(message: Message):
     
     So the bot will tell user to wait a little.
     """
-    await message.answer("Я в процессе создания ответа, пожалуйста, ожидайте")
+    await message.answer("Пожалуйста, ожидайте ⌛")
 
 @router.message(Command('help'), Main.main)
-async def handle_help_command(message: Message):
+async def handle_help_command(message: Message, bot: Bot):
     """Handle /help command.
 
     Send help message about bot to a user.
     Including advices, commands description,
     menu navigation, etc.
     """
-    await message.answer('Какое-то сообщение о помощи')
+    help_message = "Этот бот поможет вам с вашими тренировками и предоставит советы по здоровому образу жизни 🏋️\n"
+    help_message += "❗ Важно: бот не является специалистом ❗\n\n"
+    help_message += f"🤖 Набор команд:\n{await get_command_descriptions(bot)}"
+    help_message += """
+Вот несколько советов при общении с ботом:
+    <strong>📋 Заполните свой профиль</strong> - Бот будет брать информацию оттуда
+    <strong>🎯 Будьте точны в своих запросах</strong> - Тогда и ответ будет точным
+    <strong>❔ Добавляйте детали, уточнения и пожелания</strong> - Бот может чего-то не знать о вас
+    <strong>🏃 Используйте бота по назначению</strong> - Бот работает только в пределах своей области
+    """
+    await message.answer(help_message)
 
 @router.message(Command('my_plan'), Main.main)
 async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClient):
@@ -59,9 +70,9 @@ async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClie
         training_plan = await api_client.get_user_training_plan(message.from_user.id)
 
     if training_plan is None:
-        await message.answer('Вы еще не создавали план.\nИспользуйте команду /generate_plan!')
+        await message.answer('Вы еще не создавали план 🤔\n\nИспользуйте команду /generate_plan')
     else:
-        await message.answer('Вот <b>ваш план</b>')
+        await message.answer('Вот ваш план 💪')
         await message.answer(training_plan)
 
 @router.message(Command('generate_plan'), Main.main)
@@ -71,8 +82,8 @@ async def handle_generate_plan_command(message: Message, state: FSMContext):
     Set new state and ask the user to send message with extra data
     for plan generation.
     """
-    await message.answer('Отлично, я буду использовать вашу информацию, указанную в профиле\n'
-                         'Дополнительно вы можете рассказать больше для желаемого плана')
+    await message.answer('Отлично, я буду использовать вашу информацию, указанную в профиле 👍\n\n'
+                         'Дополнительно вы можете рассказать больше для желаемого плана ✍️')
     await state.set_state(UseAI.sending_request)
 
 @router.message(Command('profile'), Main.main)
@@ -89,7 +100,7 @@ async def handle_profile_command(message: Message,
         user = await api_client.get_user(message.from_user.id)
         user_activity_level = await api_client.get_activity_level(user.activity_level)
 
-    await message.answer('Ваш <b>профиль</b>')
+    await message.answer('Ваш профиль 📋')
     await message.answer(user.get_formatted_string() + user_activity_level.get_formatted_string(),
                          reply_markup=get_profile_kb())
 
@@ -120,4 +131,4 @@ async def handle_wrong_data_type(message: Message):
     They are not supported by this bot, so we 
     need to tell about that to users.
     """
-    await message.answer("Я могу работать только с текстом!")
+    await message.answer("Я могу работать только с текстом 📜")
