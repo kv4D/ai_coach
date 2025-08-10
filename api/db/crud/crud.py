@@ -75,7 +75,9 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
         """
         update_data_dict = plan_data.model_dump(exclude_unset=True)
         # there can be only one entry or none
-        entry = await session.query(cls._model).filter_by(user_id=user_id).scalar_one_or_none()
+        query = select(cls._model).filter_by(user_id=user_id)
+        entry = await session.execute(query)
+        entry = entry.scalar_one_or_none()
 
         if entry is None:
             raise NotFoundError(
@@ -96,7 +98,9 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
             user_id (`int`)
             session (`AsyncSession`): an asynchronous database session
         """
-        entry = await session.query(cls._model).filter_by(user_id=user_id).scalar_one_or_none()
+        query = select(cls._model).filter_by(user_id=user_id)
+        entry = await session.execute(query)
+        entry = entry.scalar_one_or_none()
 
         if entry is None:
             raise NotFoundError(
