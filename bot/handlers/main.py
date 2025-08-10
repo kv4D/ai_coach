@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
 from keyboards.profile import get_profile_kb
 from api.client import APIClient
-from states.create_plan import CreatePlan
+from states.use_ai import UseAI
 from states.main import Main
 
 
@@ -26,6 +26,18 @@ async def handle_value_error(event: ErrorEvent, message: Message):
     """
     await message.answer(f"Неверно введены данные\n{str(event.exception)}")
 
+@router.message(UseAI.generating_answer)
+async def handle_message_during_generation(message: Message):
+    """Handle message during generating AI answer.
+    
+    When bot is trying to get answer from the API,
+    user still can send messages, but it can ruin
+    the requests.
+    
+    So the bot will tell user to wait a little.
+    """
+    await message.answer("Я в процессе создания ответа, пожалуйста, ожидайте")
+
 @router.message(Command('help'), Main.main)
 async def handle_help_command(message: Message):
     """Handle /help command.
@@ -38,8 +50,7 @@ async def handle_help_command(message: Message):
 
 @router.message(Command('my_plan'), Main.main)
 async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClient):
-    """
-    Handle /my_plan command.
+    """Handle /my_plan command.
 
     Send user's training plan from API's database.
     If there is none, tell about it to the user.
@@ -55,22 +66,20 @@ async def handle_my_plan_command(message: Message, bot: Bot, api_client: APIClie
 
 @router.message(Command('generate_plan'), Main.main)
 async def handle_generate_plan_command(message: Message, state: FSMContext):
-    """
-    Handle /generate_plan command.
+    """Handle /generate_plan command.
 
     Set new state and ask the user to send message with extra data
     for plan generation.
     """
     await message.answer('Отлично, я буду использовать вашу информацию, указанную в профиле\n'
                          'Дополнительно вы можете рассказать больше для желаемого плана')
-    await state.set_state(CreatePlan.sending_request)
+    await state.set_state(UseAI.sending_request)
 
 @router.message(Command('profile'), Main.main)
 async def handle_profile_command(message: Message, 
                                  bot: Bot,
                                  api_client: APIClient):
-    """
-    Handle /profile command.
+    """Handle /profile command.
 
     Get user's info from API's database.
     Sends message with this data.
@@ -87,9 +96,9 @@ async def handle_profile_command(message: Message,
 @router.message(F.text, Main.main)
 async def handle_user_request(message: Message,
                               bot: Bot,
-                              api_client: APIClient):
-    """
-    Handle user request in the main state.
+                              api_client: APIClient,
+                              state: FSMContext):
+    """Handle user request in the main state.
 
     When user sends some message to bot (not a command/button),
     it means, they want to chat with AI.
@@ -99,8 +108,10 @@ async def handle_user_request(message: Message,
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         user_id = message.from_user.id
         request = message.text
+        await state.set_state(UseAI.generating_answer)
         ai_response = await api_client.get_user_request_response(user_id, request)
     await message.answer(ai_response)
+    await state.set_state(Main.main)
 
 @router.message(~F.text)
 async def handle_wrong_data_type(message: Message):
