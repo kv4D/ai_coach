@@ -1,9 +1,12 @@
 """Client for the API."""
 from aiohttp import ClientResponse, ClientSession
 from typing import Any
+import logging
 from models.activity_level import ActivityLevel
 from models.user import User
 
+
+logger = logging.getLogger(__name__)
 
 async def check_response_status(response: ClientResponse):
     """Checks request's response status.
@@ -13,11 +16,13 @@ async def check_response_status(response: ClientResponse):
     Args:
         response (`ClientResponse`): aiohttp request to the API
     """
-    if response.status != 200:
-        text = await response.text()
-        print("Status code:", response.status)
-        print("Details:", text)
+    status = response.status
+    text = await response.text()
+    if status != 200:
+        logger.error(f"API request error [STATUS {status}]: {text}")
         response.raise_for_status()
+    else:
+        logger.info(f"API request [STATUS {status}]: {text}")
 
 class APIClient:
     """API client class. Allows to make different requests to the API."""
@@ -84,7 +89,6 @@ class APIClient:
                                 user_id: int, 
                                 field_name: str, 
                                 value: Any):
-        # TODO: make model for updates
         """Update one exact field of the user.
 
         Uses User model.
@@ -148,15 +152,13 @@ class APIClient:
                                      json=request_body) as response:
             await check_response_status(response)
     
-    async def get_user_training_plan(self, user_id: int) -> str | None:
+    async def get_user_training_plan(self, user_id: int) -> str:
         """Get user's training plan from API's database.
 
         Args:
             user_id (`int`): user Telegram ID        
         """
         async with self.session.get(f"/plan/get/user/{user_id}") as response:
-            if response.status == 404:
-                return None
             await check_response_status(response)
             data = await response.json()
             plan = data['plan_description']

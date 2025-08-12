@@ -4,7 +4,6 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
 from api.client import APIClient
-from service.service import create_user_training_plan
 from states.main import Main
 from states.use_ai import UseAI
 
@@ -20,9 +19,8 @@ async def handle_plan_request(message: Message,
         request = message.text
         user_id = message.from_user.id
         await state.set_state(UseAI.generating_answer)
-        await create_user_training_plan(user_id,
-                                        request,
-                                        api_client=api_client)
+        await api_client.create_user_training_plan(user_id,
+                                                   request)
         training_plan = await api_client.get_user_training_plan(user_id)
     await message.answer('Ваш план готов ✅')
     await message.answer(training_plan)

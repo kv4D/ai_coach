@@ -1,5 +1,6 @@
 """Entry point for bot"""
 import asyncio
+import logging
 from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram import Bot, Dispatcher
@@ -21,8 +22,14 @@ def create_storage() -> RedisStorage:
     storage = RedisStorage(redis=redis)
     return storage
 
+def configure_logging():
+    logging.basicConfig(filename="bot_logs.log", 
+                        level=logging.INFO,
+                        format='[%(asctime)s] %(levelname)s \n%(filename)s:%(lineno)d - %(name)s - %(message)s\n')
+
 async def main():
     """Start the bot."""
+    configure_logging()
     bot = Bot(token=config.BOT_TOKEN,
               session=AiohttpSession(),
               default=DefaultBotProperties(

@@ -49,7 +49,6 @@ class AIClient:
         """
         prompt = PromptManager.get_plan_prompt(user, extra)
         response = await cls._create_text_response(prompt)
-        print(response)
         return response
     
     @classmethod

@@ -15,13 +15,8 @@ async def create_user(user: User, api_client: APIClient):
     try:
         await api_client.create_user(user)
     except Exception as e:
-        print(e)
         # there is a user with this ID, update data
         await api_client.update_user(user)
-
-async def create_user_training_plan(user_id: int, user_request: str, api_client: APIClient):
-    """Create a training plan for the user."""
-    await api_client.create_user_training_plan(user_id, user_request)
 
 async def get_activity_levels_description(api_client: APIClient) -> str:    
     """Get activity levels descriptions.
