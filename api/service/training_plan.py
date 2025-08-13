@@ -87,11 +87,11 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
         raise UnexpectedError(f"An error occurred:\n{str(exc)}")
     else:
         if user.training_plan:
-            plan = TrainingPlanUpdate(plan_description=plan_description)
+            TrainingPlanUpdate(plan_description=plan_description)
             await update_user_plan(user.id, plan, session=session)
-
-        plan = TrainingPlanInput(plan_description=plan_description)
-        await create(request.user_id, plan, session=session)
+        else:
+            TrainingPlanInput(plan_description=plan_description)
+            await create(request.user_id, plan, session=session)
 
 async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
     """Get the training plan for the user in the database.
