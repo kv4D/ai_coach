@@ -8,7 +8,7 @@ from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLe
 from schemas.utils import models_validate
 
 
-async def create(level_data: ActivityLevelInput, session: AsyncSession) -> ActivityLevel | None:
+async def create(level_data: ActivityLevelInput, session: AsyncSession):
     """Create a new activity level in the database.
 
     Args:
@@ -16,9 +16,8 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession) -> Activ
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        level = await ActivityLevelCRUD.create(level_data, session=session)
+        await ActivityLevelCRUD.create(level_data, session=session)
         await session.commit()
-        return ActivityLevel.model_validate(level)
     except IntegrityError as exc:
         await session.rollback()
         error_message = str(exc).lower()
@@ -27,6 +26,9 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession) -> Activ
                 f'There is already an activity level with this number: {level_data.level}.'
                 ) from exc
         raise
+    except PydanticValidationError as exc:
+        await session.rollback()
+        raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
@@ -56,7 +58,7 @@ async def get_all_levels(session: AsyncSession) -> list[ActivityLevel]:
 
 async def update(level: int,
                  level_data: ActivityLevelUpdate,
-                 session: AsyncSession) -> ActivityLevel:
+                 session: AsyncSession):
     """Update the activity level by their level number in the database.
 
     Args:
@@ -71,13 +73,14 @@ async def update(level: int,
         await session.rollback()
         raise
     except PydanticValidationError as exc:
+        await session.rollback()
         raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
-        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc
 
 async def delete(level: int,
-                 session: AsyncSession) -> None:    
+                 session: AsyncSession):    
     """Delete the activity level by their level number in the database.
 
     Args:
@@ -92,4 +95,4 @@ async def delete(level: int,
         raise
     except Exception as exc:
         await session.rollback()
-        raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc

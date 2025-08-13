@@ -25,6 +25,11 @@ class ValidationError(BaseCustomException):
     def __init__(self, message: str = "Validation error"):
         super().__init__(message, status_code=400)
 
+class AIRequestError(BaseCustomException):
+    """AI request error."""
+    def __init__(self, message: str = "AI request error"):
+        super().__init__(message, status_code=500)
+
 class UnexpectedError(BaseCustomException):
     """Unidentified error.
 

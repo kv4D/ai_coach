@@ -12,7 +12,7 @@ from exceptions import AlreadyExistError, NotFoundError, ValidationError, \
 from llm.ai_client import AIClient
 
 
-async def create(user_data: UserInput, session: AsyncSession) -> User | None:
+async def create(user_data: UserInput, session: AsyncSession):
     """Create a new user in the database.
 
     Args:
@@ -23,15 +23,16 @@ async def create(user_data: UserInput, session: AsyncSession) -> User | None:
         user = await UserCRUD.create(user_data, session=session)
         user = User.model_validate(user)
         await session.commit()
-        return user
     except IntegrityError as exc:
         await session.rollback()
         error_message = str(exc).lower()
         if 'foreign key' in error_message:
-            raise NotFoundError(f"No such activity level: {user_data.activity_level}.") from exc
+            raise NotFoundError(f"No such activity level: {user_data.activity_level}") from exc
     except AlreadyExistError as exc:
-        raise AlreadyExistError(f'There is already a user with such ID: {user_data.id}.') from exc
+        await session.rollback()
+        raise AlreadyExistError(f'There is already a user with such ID: {user_data.id}') from exc
     except PydanticValidationError as exc:
+        await session.rollback()
         raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
@@ -79,7 +80,7 @@ async def get_by_id(user_id: int, session: AsyncSession) -> User:
 
 async def update(user_id: int,
                  user_data: UserUpdate,
-                 session: AsyncSession) -> User:
+                 session: AsyncSession):
     """Update the user by their ID in the database.
 
     Args:
@@ -94,6 +95,7 @@ async def update(user_id: int,
         await session.rollback()
         raise
     except PydanticValidationError as exc:
+        await session.rollback()
         raise ValidationError(f"Validation error:\n{str(exc)}") from exc
     except Exception as exc:
         await session.rollback()
