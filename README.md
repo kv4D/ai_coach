@@ -61,7 +61,23 @@ python bot/main.py
 ```
 
 ## Bot guide
-In progress
+#### 1. Start the bot
+In Telegram use a link to go to the chat with the bot and press ***start***.
+
+Fill in your data (age, weight, etc.) and you should be ready to use the bot.
+#### 2. Choose a menu action
+You can use bot with special bot commands (`/start', for example), they will be displayed in menu.
+
+##### BOT COMMANDS
+|Command   	|Description   	|
+|---	|---	|
+|`/help`|Get info about bot usage and list of commands|
+|`/start`|Create your profile from scratch|
+|`/profile`|Inspect your profile and edit its fields|
+|`/generate_plan`|Generate a training plan|
+|`/my_plan`|Inspect your current training plan|
+
+If you want to simply communitcate with the bot, just send him a message (for example, "Is it okay to workout everyday?").
 
 ## API guide
 In progress
