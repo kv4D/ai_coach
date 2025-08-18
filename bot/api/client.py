@@ -4,6 +4,7 @@ from typing import Any
 import logging
 from models.activity_level import ActivityLevel
 from models.user import User
+from config import config
 
 
 logger = logging.getLogger(__name__)
@@ -24,20 +25,17 @@ async def check_response_status(response: ClientResponse):
     else:
         logger.info(f"API request [STATUS {status}]: {text}")
 
+
 class APIClient:
     """API client class. Allows to make different requests to the API."""
 
-    # put your API URL there
-    _API_URL_BASE = 'http://localhost:8000'
-
-    # TODO: make it singleton
     def __init__(self):
         """
         Create client and session.
 
         Use only once on bot's **start up**.
         """
-        self.session = ClientSession(self._API_URL_BASE)
+        self.session = ClientSession(config.API_BASE_URL)
         
     async def close_session(self):
         """Close API aiohttp session.
@@ -148,7 +146,7 @@ class APIClient:
             'user_id': user_id,
             'content': user_request
         }
-        async with self.session.post("plan/generate",
+        async with self.session.post("/plan/generate",
                                      json=request_body) as response:
             await check_response_status(response)
     

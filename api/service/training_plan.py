@@ -87,10 +87,10 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
         raise UnexpectedError(f"An error occurred:\n{str(exc)}")
     else:
         if user.training_plan:
-            TrainingPlanUpdate(plan_description=plan_description)
+            plan = TrainingPlanUpdate(plan_description=plan_description)
             await update_user_plan(user.id, plan, session=session)
         else:
-            TrainingPlanInput(plan_description=plan_description)
+            plan = TrainingPlanInput(plan_description=plan_description)
             await create(request.user_id, plan, session=session)
 
 async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
@@ -114,7 +114,7 @@ async def delete(user_id: int, session: AsyncSession) -> None:
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        await TrainingPlanCRUD.delete_by_id(user_id, session=session)
+        await TrainingPlanCRUD.delete_by_user_id(user_id, session=session)
         await session.commit()
     except NotFoundError:
         await session.rollback()

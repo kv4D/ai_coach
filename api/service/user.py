@@ -20,8 +20,7 @@ async def create(user_data: UserInput, session: AsyncSession):
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        user = await UserCRUD.create(user_data, session=session)
-        user = User.model_validate(user)
+        await UserCRUD.create(user_data, session=session)
         await session.commit()
     except IntegrityError as exc:
         await session.rollback()
@@ -41,7 +40,8 @@ async def create(user_data: UserInput, session: AsyncSession):
 async def set_activity_level(user: User, session: AsyncSession):
     if user.activity_level:
         activity_level = await ActivityLevelCRUD.get_by_id(user.activity_level, session)
-        user.activity_level_info = ActivityLevel.model_validate(activity_level)
+        if activity_level:
+            user.activity_level_info = ActivityLevel.model_validate(activity_level)
 
 async def get_all(session: AsyncSession) -> list[User]:
     """Get all users in the database.

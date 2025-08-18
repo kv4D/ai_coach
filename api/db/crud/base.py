@@ -19,7 +19,7 @@ class BaseCRUD(Generic[TDBModel]):
     _model: type[TDBModel]
 
     @classmethod
-    async def create(cls, data: BaseModel, session: AsyncSession):
+    async def create(cls, data: BaseModel, session: AsyncSession) -> TDBModel:
         """Create an entry in the database.
 
         Args:
@@ -30,6 +30,7 @@ class BaseCRUD(Generic[TDBModel]):
         entry = cls._model(**data_dict)
         session.add(instance=entry)
         await session.flush()
+        return entry
 
     @classmethod
     async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel] | None:

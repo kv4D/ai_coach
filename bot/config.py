@@ -15,7 +15,7 @@ class Config(BaseSettings):
     HOST: str
     BOT_TOKEN: str
     BOT_STORAGE_PORT: int
-
+    API_BASE_URL: str = "http://localhost:8000"
 
 # import this to use config
 config = Config() # type: ignore

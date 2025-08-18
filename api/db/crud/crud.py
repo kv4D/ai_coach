@@ -57,9 +57,10 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
             session (`AsyncSession`): an asynchronous database session
         """
         plan_data_dict = plan_data.model_dump(exclude_unset=True)
-        instance = cls._model(**plan_data_dict, user_id=user_id)
-        session.add(instance=instance)
+        entry = cls._model(**plan_data_dict, user_id=user_id)
+        session.add(instance=entry)
         await session.flush()
+        return entry
 
     @classmethod
     async def update_by_user_id(cls,

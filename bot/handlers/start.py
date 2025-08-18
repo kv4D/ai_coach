@@ -9,6 +9,7 @@ from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.common import get_gender_kb, get_activity_level_kb
 from keyboards.commands import set_menu, set_cancel
+from filters.user import UserExistsFilter
 from models.user import User
 from models.activity_level import ActivityLevel
 from utils import get_command_descriptions
@@ -16,18 +17,14 @@ from utils import get_command_descriptions
 
 router = Router()
 
-@router.message(Command('cancel'), StateFilter(CreateProfile))
-async def handle_cancel_command(message: Message, 
-                                        state: FSMContext, 
-                                        bot: Bot):
+@router.message(Command('cancel'), StateFilter(CreateProfile), UserExistsFilter())
+async def handle_cancel_command(message: Message,
+                                state: FSMContext,
+                                bot: Bot):
     """
-    Handle /start command, but from a user that is
-    already in the database.
+    Handle /cancel command of an old user.
 
-    Set state flag and give a chance to 
-    revert changes.
-    Start collecting user's data.
-    Begin with user's age.
+    Cancel updating their profile.
     """
     await state.clear()
     await message.answer('Изменения отменены ❌',
@@ -35,15 +32,15 @@ async def handle_cancel_command(message: Message,
     await set_menu(bot, message.chat.id)
     await state.set_state(Main.main)
 
-@router.message(CommandStart(), StateFilter(None, Main.main))
-async def handle_old_user_start_command(message: Message, 
-                                        state: FSMContext, 
+@router.message(CommandStart(), StateFilter(Main.main), UserExistsFilter())
+async def handle_old_user_start_command(message: Message,
+                                        state: FSMContext,
                                         bot: Bot):
     """
     Handle /start command, but from a user that is
     already in the database.
 
-    Set state flag and give a chance to 
+    Set state flag and give a chance to
     revert changes.
     Start collecting user's data.
     Begin with user's age.
@@ -56,9 +53,9 @@ async def handle_old_user_start_command(message: Message,
     await set_cancel(bot, message.chat.id)
     await state.set_state(CreateProfile.sending_age)
 
-@router.message(CommandStart(), StateFilter(None, Main.main))
-async def handle_new_user_start_command(message: Message, 
-                                        state: FSMContext, 
+@router.message(CommandStart(), StateFilter(None, Main.main), ~UserExistsFilter())
+async def handle_new_user_start_command(message: Message,
+                                        state: FSMContext,
                                         bot: Bot):
     """
     Handle /start command from a new user.

@@ -43,6 +43,8 @@ async def get_by_level(level: int, session: AsyncSession) -> ActivityLevel:
         session (`AsyncSession`): an asynchronous database session
     """
     level_model = await ActivityLevelCRUD.get_by_id(level, session=session)
+    if level_model is None:
+        raise NotFoundError(f"There is no activity level with level={level}.")
     return ActivityLevel.model_validate(level_model)
 
 async def get_all_levels(session: AsyncSession) -> list[ActivityLevel]:

@@ -6,11 +6,6 @@ from routes import user, activity_levels, training_plan
 
 app = FastAPI(exception_handlers=exception_handlers)
 
-@app.get('')
-def ping() -> str:
-    """Test endpoint."""
-    return 'Hello, User'
-
 # include routers here
 app.include_router(user.router)
 app.include_router(activity_levels.router)

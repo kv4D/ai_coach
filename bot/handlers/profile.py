@@ -13,7 +13,6 @@ from keyboards.profile import get_profile_kb
 from keyboards.commands import set_cancel, set_menu
 from states.main import Main
 from states.profile import Profile
-from api.client import APIClient
 
 
 router = Router()
@@ -100,10 +99,13 @@ async def process_new_field_value(message: Message,
     """
     field_to_update = await state.get_value('field_to_update')
     new_value = message.text
+
     if field_to_update == 'activity_level':
         validated_value = ActivityLevel.validate_level(new_value)
     else:
-        validated_value = getattr(User, f"validate_{field_to_update}")(new_value)
+        validator = getattr(User, f"validate_{field_to_update}", None)
+        validated_value = validator(new_value) if validator else new_value
+
     # updating value
     await api_client.update_user_field(message.from_user.id, 
                                        field_to_update,

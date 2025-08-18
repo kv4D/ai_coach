@@ -13,10 +13,9 @@ router = APIRouter(prefix=f"/user")
 
 @router.post('/create')
 async def create_user(user_data: UserInput,
-                      session: AsyncSession = Depends(get_db_session)) -> User | None:
+                      session: AsyncSession = Depends(get_db_session)) -> None:
     """Create a new user."""
-    user = await service.create(user_data, session=session)
-    return user
+    await service.create(user_data, session=session)
 
 @router.post('/chat')
 async def chat_with_ai(request: UserAIRequest,
