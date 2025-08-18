@@ -29,7 +29,7 @@ class APIClient:
 
     # put your API URL there
     _API_URL_BASE = 'http://localhost:8000'
-    
+
     # TODO: make it singleton
     def __init__(self):
         """

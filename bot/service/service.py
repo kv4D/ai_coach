@@ -1,8 +1,8 @@
 from api.client import APIClient
+from aiohttp import ClientResponseError
 from models.user import User
 
 
-# TODO: make exceptions certain
 async def create_user(user: User, api_client: APIClient):
     """Create a user entry in API.
 
@@ -14,7 +14,7 @@ async def create_user(user: User, api_client: APIClient):
     """
     try:
         await api_client.create_user(user)
-    except Exception as e:
+    except ClientResponseError:
         # there is a user with this ID, update data
         await api_client.update_user(user)
 
@@ -36,3 +36,17 @@ async def get_activity_levels_description(api_client: APIClient) -> str:
         return message_str
     except:
         raise
+
+async def is_user_exist(user_id: int, api_client: APIClient) -> bool:
+    """Check if the user is present in the database.
+
+    Args:
+        user_id (`int`): user Telegram ID
+        api_client (`APIClient`): an API client to make requests
+    """
+    try:
+        await api_client.get_user(user_id)
+        return True
+    except ClientResponseError:
+        # no user found
+        return False
