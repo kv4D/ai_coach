@@ -1,6 +1,6 @@
 from aiogram import Router, F, Bot
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import CommandStart, StateFilter, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
 from service.service import get_activity_levels_description, create_user
@@ -8,7 +8,7 @@ from api.client import APIClient
 from states.create_profile import CreateProfile
 from states.main import Main
 from keyboards.common import get_gender_kb, get_activity_level_kb
-from keyboards.commands import set_menu
+from keyboards.commands import set_menu, set_cancel
 from models.user import User
 from models.activity_level import ActivityLevel
 from utils import get_command_descriptions
@@ -16,10 +16,53 @@ from utils import get_command_descriptions
 
 router = Router()
 
-@router.message(CommandStart(), StateFilter(None, Main.main))
-async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
+@router.message(Command('cancel'), StateFilter(CreateProfile))
+async def handle_cancel_command(message: Message, 
+                                        state: FSMContext, 
+                                        bot: Bot):
     """
-    Handle /start command.
+    Handle /start command, but from a user that is
+    already in the database.
+
+    Set state flag and give a chance to 
+    revert changes.
+    Start collecting user's data.
+    Begin with user's age.
+    """
+    await state.clear()
+    await message.answer('Изменения отменены ❌',
+                         reply_markup=ReplyKeyboardRemove())
+    await set_menu(bot, message.chat.id)
+    await state.set_state(Main.main)
+
+@router.message(CommandStart(), StateFilter(None, Main.main))
+async def handle_old_user_start_command(message: Message, 
+                                        state: FSMContext, 
+                                        bot: Bot):
+    """
+    Handle /start command, but from a user that is
+    already in the database.
+
+    Set state flag and give a chance to 
+    revert changes.
+    Start collecting user's data.
+    Begin with user's age.
+    """
+    await state.clear()
+    await message.answer('Вы начинаете заполнять профиль с нуля 📋\nЕсли вы передумаете, используйте команду <b>/cancel</b> 🔙',
+                         reply_markup=ReplyKeyboardRemove())
+    await message.answer('Введите ваш <b>возраст</b> 🌱')
+    await bot.delete_my_commands()
+    await set_cancel(bot, message.chat.id)
+    await state.set_state(CreateProfile.sending_age)
+
+@router.message(CommandStart(), StateFilter(None, Main.main))
+async def handle_new_user_start_command(message: Message, 
+                                        state: FSMContext, 
+                                        bot: Bot):
+    """
+    Handle /start command from a new user.
+
     User starts the bot by sending the /start command.
     Start collecting user's data.
     Begin with user's age.
@@ -30,7 +73,6 @@ async def handle_start_command(message: Message, state: FSMContext, bot: Bot):
                          reply_markup=ReplyKeyboardRemove())
     await message.answer('Введите ваш <b>возраст</b> 🌱')
     await state.set_state(CreateProfile.sending_age)
-
 
 @router.message(F.text, CreateProfile.sending_age)
 async def process_age(message: Message, state: FSMContext):
