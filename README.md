@@ -80,4 +80,30 @@ You can use bot with special bot commands (`/start', for example), they will be 
 If you want to simply communitcate with the bot, just send him a message (for example, "Is it okay to workout everyday?").
 
 ## API guide
-In progress
+This API is designed to store, write and access data
+
+You can get all information you need using FastAPI documentation for the API
+Access this documentation via links on local machine:
+- `localhost:your_port/docs`
+- `localhost:your_port/redoc`
+
+#### Base URL scheme
+There are URL groups for all models in the API:
+- `/user`
+- `/training plan`
+- `/activity level`
+
+For each group there are CRUD operations paths
+and some unique specific ones:
+- `/create`
+- `/delete`
+- `/generate` - for training plans only
+
+They may require some path parameters
+
+#### Some useful paths
+|URL   	|Description   	|
+|---	|---	|
+|`/user/create`|Create a new user|
+|`/user/get/{user_id}`|Get the user with ID=user_id|
+|`/plan/generate`|Generate a training plan for a user using AI|
