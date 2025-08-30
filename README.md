@@ -66,7 +66,7 @@ In Telegram use a link to go to the chat with the bot and press ***start***.
 
 Fill in your data (age, weight, etc.) and you should be ready to use the bot.
 #### 2. Choose a menu action
-You can use bot with special bot commands (`/start', for example), they will be displayed in menu.
+You can use bot with special bot commands (`/start', for example), they will be displayed in the menu.
 
 ##### BOT COMMANDS
 |Command   	|Description   	|
@@ -77,13 +77,13 @@ You can use bot with special bot commands (`/start', for example), they will be 
 |`/generate_plan`|Generate a training plan|
 |`/my_plan`|Inspect your current training plan|
 
-If you want to simply communitcate with the bot, just send him a message (for example, "Is it okay to workout everyday?").
+If you want to simply communicate with the bot, just send him a message (for example, "Is it okay to workout everyday?").
 
 ## API guide
 This API is designed to store, write and access data
 
 You can get all information you need using FastAPI documentation for the API
-Access this documentation via links on local machine:
+Access this documentation via links (if you use on local machine):
 - `localhost:your_port/docs`
 - `localhost:your_port/redoc`
 
