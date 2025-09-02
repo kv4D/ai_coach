@@ -20,7 +20,7 @@ async def get_db_session():
     Otherwise changes will be lost.
     """
     async with session_maker() as session:
-            yield session
+        yield session
 
 def connect(commit: bool = True):
     """

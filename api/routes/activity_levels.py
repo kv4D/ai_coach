@@ -12,7 +12,8 @@ router = APIRouter(prefix="/level")
 
 @router.post('/create')
 async def create_activity_level(level_data: ActivityLevelInput,
-                                session: AsyncSession = Depends(get_db_session)) -> ActivityLevel | None:
+                                session:
+                                    AsyncSession = Depends(get_db_session))-> ActivityLevel | None:
     """Create new activity level.
 
     Use with care: the levels must be relevant and fit well

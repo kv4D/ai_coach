@@ -174,5 +174,5 @@ async def process_goal(message: Message,
                          f'Список команд:\n{await get_command_descriptions(bot)}',
                          reply_markup=ReplyKeyboardRemove())
     await state.clear()
-    await set_menu(bot)
+    await set_menu(bot, chat_id=message.chat.id)
     await state.set_state(Main.main)

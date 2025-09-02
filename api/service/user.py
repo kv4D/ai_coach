@@ -38,6 +38,7 @@ async def create(user_data: UserInput, session: AsyncSession):
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
 async def set_activity_level(user: User, session: AsyncSession):
+    """Set activity level for user."""
     if user.activity_level:
         activity_level = await ActivityLevelCRUD.get_by_id(user.activity_level, session)
         if activity_level:
@@ -127,7 +128,7 @@ async def get_ai_answer(request: UserAIRequest,
         user_id (`int`)
         user_request (`str`): user's message to AI
         session (`AsyncSession`): an asynchronous database session
-    """    
+    """
     user = await get_by_id(request.user_id, session)
     response = await AIClient.generate_user_response(user, request.content)
     return response

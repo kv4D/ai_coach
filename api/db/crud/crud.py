@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from schemas.training_plan import TrainingPlanUpdate
 from exceptions import NotFoundError
 from .base import BaseCRUD
-from db.models.models import TrainingPlanModel, UserModel, ActivityLevelModel
+from .models.models import TrainingPlanModel, UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):
@@ -30,8 +30,8 @@ class TrainingPlanCRUD(BaseCRUD[TrainingPlanModel]):
     _model = TrainingPlanModel
 
     @classmethod
-    async def get_by_user_id(cls, 
-                             user_id: int, 
+    async def get_by_user_id(cls,
+                             user_id: int,
                              session: AsyncSession) -> None | TrainingPlanModel:
         """Get a training plan for a user using their ID.
 

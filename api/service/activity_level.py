@@ -82,7 +82,7 @@ async def update(level: int,
         raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc
 
 async def delete(level: int,
-                 session: AsyncSession):    
+                 session: AsyncSession):
     """Delete the activity level by their level number in the database.
 
     Args:

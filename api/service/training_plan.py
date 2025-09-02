@@ -10,8 +10,8 @@ from service.user import get_by_id
 from llm.ai_client import AIClient
 
 
-async def create(user_id: int, 
-                 plan_data: TrainingPlanInput, 
+async def create(user_id: int,
+                 plan_data: TrainingPlanInput,
                  session: AsyncSession):
     """Create a new training plan for the user in the database.
 
@@ -37,10 +37,10 @@ async def create(user_id: int,
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
-    
 
-async def update_user_plan(user_id: int, 
-                           plan_data: TrainingPlanUpdate, 
+
+async def update_user_plan(user_id: int,
+                           plan_data: TrainingPlanUpdate,
                            session: AsyncSession):
     """Update the training plan for the user in the database.
 
@@ -73,7 +73,7 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
         request (`UserAIRequest`): data for making request
         session (`AsyncSession`): an asynchronous database session
     """
-    try: 
+    try:
         user = await get_by_id(request.user_id, session)
         plan_description = await AIClient.generate_user_plan(user, request.content)
     except NotFoundError:
@@ -84,7 +84,7 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
         raise
     except Exception as exc:
         await session.rollback()
-        raise UnexpectedError(f"An error occurred:\n{str(exc)}")
+        raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc
     else:
         if user.training_plan:
             plan = TrainingPlanUpdate(plan_description=plan_description)

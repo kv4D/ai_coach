@@ -8,7 +8,7 @@ from db.database import get_db_session
 from service import user as service
 
 
-router = APIRouter(prefix=f"/user")
+router = APIRouter(prefix="/user")
 
 
 @router.post('/create')
@@ -28,7 +28,7 @@ async def chat_with_ai(request: UserAIRequest,
     return await service.get_ai_answer(request, session=session)
 
 @router.get('/get/{user_id}')
-async def get_by_id(user_id: int, 
+async def get_by_id(user_id: int,
                     session: AsyncSession = Depends(get_db_session)) -> User:
     """Get the user by ID."""
     user = await service.get_by_id(user_id, session=session)
@@ -46,7 +46,7 @@ async def update_user(user_id: int,
                       session: AsyncSession = Depends(get_db_session)) -> JSONResponse:
     """Update the user by their ID."""
     await service.update(user_id, user_data, session)
-    return JSONResponse(status_code=200, 
+    return JSONResponse(status_code=200,
                         content={"message": f"User with ID={user_id} was updated"})
 
 @router.delete('/delete/{user_id}')
@@ -54,5 +54,5 @@ async def delete_user(user_id: int,
                       session: AsyncSession = Depends(get_db_session)) -> JSONResponse:
     """Delete the user by their ID."""
     await service.delete(user_id, session=session)
-    return JSONResponse(status_code=200, 
+    return JSONResponse(status_code=200,
                         content={"message": f"User with ID={user_id} was deleted"})

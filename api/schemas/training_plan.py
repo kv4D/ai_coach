@@ -1,8 +1,10 @@
+"""Training plan Pydantic schemas."""
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class TrainingPlanValidationMixin:
+    """Mixin for field validation in schemas."""
     @field_validator('plan_description')
     @classmethod
     def check_plan_description(cls, text: str) -> str:

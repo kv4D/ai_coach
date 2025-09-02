@@ -8,18 +8,18 @@ from db.models.base_model import BaseDatabaseModel
 
 
 # type parameter for BaseModel children
-TDBModel = TypeVar("TDBModel", bound=BaseDatabaseModel)
+DatabaseModelT = TypeVar("DatabaseModelT", bound=BaseDatabaseModel)
 
-class BaseCRUD(Generic[TDBModel]):
+class BaseCRUD(Generic[DatabaseModelT]):
     """
     Base DAO class for CRUD operations for any model.
 
     Override '_model' to use with some specific model.
     """
-    _model: type[TDBModel]
+    _model: type[DatabaseModelT]
 
     @classmethod
-    async def create(cls, data: BaseModel, session: AsyncSession) -> TDBModel:
+    async def create(cls, data: BaseModel, session: AsyncSession) -> DatabaseModelT:
         """Create an entry in the database.
 
         Args:
@@ -33,7 +33,7 @@ class BaseCRUD(Generic[TDBModel]):
         return entry
 
     @classmethod
-    async def get_all(cls, session: AsyncSession) -> Iterable[TDBModel] | None:
+    async def get_all(cls, session: AsyncSession) -> Iterable[DatabaseModelT] | None:
         """Get all model's entries in the database.
 
         Args:
@@ -45,7 +45,7 @@ class BaseCRUD(Generic[TDBModel]):
         return entries
 
     @classmethod
-    async def get_by_id(cls, entry_id: int, session: AsyncSession) -> None | TDBModel:
+    async def get_by_id(cls, entry_id: int, session: AsyncSession) -> None | DatabaseModelT:
         """Get a model entry by the ID/primary key.
 
         Args:
@@ -78,7 +78,7 @@ class BaseCRUD(Generic[TDBModel]):
         await session.flush()
 
     @classmethod
-    async def delete_by_id(cls, entry_id: int, session: AsyncSession) -> TDBModel:
+    async def delete_by_id(cls, entry_id: int, session: AsyncSession) -> DatabaseModelT:
         """Delete an entry by its ID/primary key.
 
         Args:

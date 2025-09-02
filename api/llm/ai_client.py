@@ -1,3 +1,4 @@
+"""The client for OpenAI API."""
 from openai import AsyncOpenAI
 from schemas.user import User
 from config import config
@@ -6,6 +7,7 @@ from exceptions import AIRequestError
 
 
 class AIClient:
+    """The client for OpenAI API usage. Use to get responses from the model."""
     CLIENT = AsyncOpenAI(api_key=config.AI_API_KEY,
                          base_url="https://openrouter.ai/api/v1",
                          max_retries=config.AI_API_MAX_RETRIES)
@@ -38,8 +40,8 @@ class AIClient:
         raise AIRequestError(f"AI couldn't provide any answer to the request:\n{prompt[:200]}...")
 
     @classmethod
-    async def generate_user_plan(cls, 
-                                 user: User, 
+    async def generate_user_plan(cls,
+                                 user: User,
                                  extra: str | None) -> str:
         """
         Generate training plan for the user using
@@ -48,10 +50,10 @@ class AIClient:
         prompt = PromptManager.get_plan_prompt(user, extra)
         response = await cls._create_text_response(prompt)
         return response
-    
+
     @classmethod
-    async def generate_user_response(cls, 
-                                     user: User, 
+    async def generate_user_response(cls,
+                                     user: User,
                                      user_request: str | None) -> str:
         """
         Generate a general response for user request.

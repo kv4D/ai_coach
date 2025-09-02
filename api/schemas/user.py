@@ -1,3 +1,4 @@
+"""User Pydantic schemas."""
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, \
     field_validator, Field
@@ -6,9 +7,14 @@ from schemas.training_plan import TrainingPlan
 
 
 class UserValidationMixin:
+    """Mixin for field validation in schemas."""
     @field_validator('gender')
     @classmethod
     def check_gender(cls, gender_str: str) -> str:
+        """Check gender.
+
+        We accept only male/female options.
+        """
         gender_str = gender_str.lower()
         possible_strings = ('male', 'female')
         if gender_str not in possible_strings:
@@ -30,7 +36,7 @@ class User(BaseModel):
     activity_level: Optional[int] = None
     activity_level_info: Optional[ActivityLevel] = None
     training_plan: Optional[TrainingPlan] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class UserInput(BaseModel, UserValidationMixin):

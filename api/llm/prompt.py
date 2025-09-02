@@ -1,7 +1,11 @@
+"""Prepared AI prompts for AI API requests."""
 from schemas.user import User
 
 
 class PromptManager:
+    """
+    Manages and constructs different prompt types for AI API request usage.
+    """
     @classmethod
     def get_base_prompt(cls, user: User) -> str:
         """
@@ -25,7 +29,8 @@ class PromptManager:
         Рост: "{user.height_cm} см"
         Вес: "{user.weight_kg} кг"
         Уровень активности: "{user.activity_level}"
-        Описание уровня активности: "{user.activity_level_info.description if user.activity_level_info else None}"
+        Описание уровня активности: 
+        "{user.activity_level_info.description if user.activity_level_info else None}"
 
     Цель: "{user.goal}"
 
@@ -35,6 +40,8 @@ class PromptManager:
         2) Если какое-то поле в "ДАННЫЕ ПОЛЬЗОВАТЕЛЯ" 
         имеет значение None (кроме username)- предложи пользователю
         указать его в профиле (только указанные поля, они поля в базе данных)
+        3) Не приветствуй пользователя, не пиши дополнительные слова, делай то,
+        что указано
     """
 
     @classmethod
@@ -60,8 +67,7 @@ class PromptManager:
         2) Распиши каждый день недели (от понедельника до воскресенья)
         3) Предоставь совет на каждый день
         4) Чтобы весь план получилось отправить, экономь (план должен весь поместиться)
-        5) Не нужно писать дополнительные слова, сразу пиши план
-        6) В конце добавь: "Помни, что это примерный план, и ты можешь его модифицировать!"
+        5) В конце добавь: "Помни, что это примерный план, и ты можешь его модифицировать!"
 
 
     Используй данный шаблон:

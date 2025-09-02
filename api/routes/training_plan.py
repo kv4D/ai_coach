@@ -8,7 +8,7 @@ from db.database import get_db_session
 from service import training_plan as service
 
 
-router = APIRouter(prefix=f"/plan")
+router = APIRouter(prefix="/plan")
 
 
 @router.post('/create/user/{user_id}')
@@ -41,4 +41,4 @@ async def delete_plan_by_user_id(user_id: int,
     """Get user's training plan by their id."""
     await service.delete(user_id, session)
     return JSONResponse(status_code=200,
-                        content={'message': f'Training plan of user with ID={user_id} was deleted.'})
+                        content={'message': f'Plan for user with ID={user_id} was deleted.'})
