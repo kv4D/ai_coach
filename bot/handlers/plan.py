@@ -11,8 +11,8 @@ from states.use_ai import UseAI
 router = Router()
 
 @router.message(F.text, UseAI.sending_request)
-async def handle_plan_request(message: Message, 
-                              state: FSMContext, 
+async def handle_plan_request(message: Message,
+                              state: FSMContext,
                               bot: Bot,
                               api_client: APIClient):
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
