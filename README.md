@@ -41,6 +41,10 @@ Also it was important to create an app that I would use, something useful.
 - **OpenAI** - an SDK for OpenAI API (to get AI responses)
 
 ## Quick start
+***---STILL UNDER CONSTRUCTION---***
+
+***No docker contrainers yet***
+
 It is recommended to use venv for installing all of the dependencies.
 
 1) Clone the repository
@@ -49,13 +53,13 @@ It is recommended to use venv for installing all of the dependencies.
 pip install -r requirements.txt
 ```
 3) Create `.env` file based on `.env_example`
-4) Go to project's directory and launch bot and api (note that they are launched as packages):
+4) Go to project's directory and launch the bot and api (note that they are launched as packages):
 
-Launch _api_
+Launch the _api_
 ```bash
 python -m api.main
 ```
-Launch _bot_
+Launch the _bot_
 ```bash
 python -m bot.main
 ```
@@ -66,7 +70,7 @@ In Telegram use a link to go to the chat with the bot and press ***start***.
 
 Fill in your data (age, weight, etc.) and you should be ready to use the bot.
 #### 2. Choose a menu action
-You can use bot with special bot commands (`/start', for example), they will be displayed in the menu.
+You can use the bot with special bot commands (`/start', for example), they will be displayed in the menu.
 
 ##### BOT COMMANDS
 |Command   	|Description   	|
