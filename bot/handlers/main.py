@@ -4,11 +4,11 @@ from aiogram.types import Message, ErrorEvent
 from aiogram.filters import Command, ExceptionTypeFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
-from keyboards.profile import get_profile_kb
-from api.client import APIClient
-from states.use_ai import UseAI
-from states.main import Main
-from utils import get_command_descriptions
+from bot.keyboards.profile import get_profile_kb
+from bot.api.client import APIClient
+from bot.states.use_ai import UseAI
+from bot.states.main import Main
+from bot.utils import get_command_descriptions
 
 
 router = Router()

@@ -6,8 +6,8 @@ Created for all models in the database.
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from exceptions import NotFoundError
-from schemas.training_plan import TrainingPlanUpdate
+from api.exceptions import NotFoundError
+from api.schemas.training_plan import TrainingPlanUpdate
 from .base_crud import BaseCRUD
 from .models import TrainingPlanModel, UserModel, ActivityLevelModel
 

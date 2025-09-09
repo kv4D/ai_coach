@@ -1,8 +1,8 @@
 """Entry point to the API."""
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from exceptions import BaseCustomException
-from routes import user, activity_levels, training_plan
+from .exceptions import BaseCustomException
+from .routes import user, activity_levels, training_plan
 
 
 app = FastAPI()
@@ -34,4 +34,4 @@ app.include_router(training_plan.router)
 # for launching
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("api.main:app", reload=True)

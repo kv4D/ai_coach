@@ -1,9 +1,9 @@
 """The client for OpenAI API."""
 from openai import AsyncOpenAI
-from schemas.user import User
-from config import config
-from llm.prompt import PromptManager
-from exceptions import AIRequestError
+from api.schemas.user import User
+from api.config import config
+from api.exceptions import AIRequestError
+from .prompt import PromptManager
 
 
 class AIClient:

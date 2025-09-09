@@ -2,8 +2,8 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
-from api.client import APIClient
-from service.service import is_user_exist
+from bot.api.client import APIClient
+from bot.service.service import is_user_exist
 
 
 class UserExistsFilter(BaseFilter):

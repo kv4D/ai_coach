@@ -2,8 +2,8 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, \
     field_validator, Field
-from schemas.activity_level import ActivityLevel
-from schemas.training_plan import TrainingPlan
+from .activity_level import ActivityLevel
+from .training_plan import TrainingPlan
 
 
 class UserValidationMixin:

@@ -2,10 +2,10 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.ai_request import UserAIRequest
-from schemas.training_plan import TrainingPlan, TrainingPlanInput
-from database.database import get_db_session
-from service import training_plan as service
+from api.schemas.ai_request import UserAIRequest
+from api.schemas.training_plan import TrainingPlan, TrainingPlanInput
+from api.database.database import get_db_session
+from api.service import training_plan as service
 
 
 router = APIRouter(prefix="/plan")

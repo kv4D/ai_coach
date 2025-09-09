@@ -49,15 +49,15 @@ It is recommended to use venv for installing all of the dependencies.
 pip install -r requirements.txt
 ```
 3) Create `.env` file based on `.env_example`
-4) Go to project's directory and launch bot and api:
+4) Go to project's directory and launch bot and api (note that they are launched as packages):
 
 Launch _api_
 ```bash
-python api/main.py
+python -m api.main
 ```
 Launch _bot_
 ```bash
-python bot/main.py
+python -m bot.main
 ```
 
 ## Bot guide

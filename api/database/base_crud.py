@@ -3,8 +3,8 @@ from typing import Generic, TypeVar, Iterable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
-from exceptions import NotFoundError
-from database.base_model import BaseDatabaseModel
+from api.exceptions import NotFoundError
+from api.database.base_model import BaseDatabaseModel
 
 
 # type parameter for BaseModel children

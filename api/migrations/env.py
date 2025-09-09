@@ -1,14 +1,12 @@
 import asyncio
+from alembic import context
 from logging.config import fileConfig
-
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from api.database.base_model import BaseDatabaseModel
 from api.database.models import UserModel, TrainingPlanModel, ActivityLevelModel
-from config import config as app_config
-
-from alembic import context
+from api.config import config as api_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,7 +27,7 @@ target_metadata = BaseDatabaseModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", app_config.api_db_url)
+config.set_main_option("sqlalchemy.url", api_config.api_db_url)
 
 
 def run_migrations_offline() -> None:

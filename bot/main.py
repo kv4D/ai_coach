@@ -7,12 +7,12 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
-from config import config
-from api.client import APIClient
-from handlers.start import router as start_router
-from handlers.main import router as main_router
-from handlers.profile import router as profile_router
-from handlers.plan import router as plan_router
+from bot.config import config
+from bot.api.client import APIClient
+from bot.handlers.start import router as start_router
+from bot.handlers.main import router as main_router
+from bot.handlers.profile import router as profile_router
+from bot.handlers.plan import router as plan_router
 
 
 def create_storage() -> RedisStorage:

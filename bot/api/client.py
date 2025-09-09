@@ -2,9 +2,9 @@
 from typing import Any
 import logging
 from aiohttp import ClientResponse, ClientSession
-from models.activity_level import ActivityLevel
-from models.user import User
-from config import config
+from bot.models.activity_level import ActivityLevel
+from bot.models.user import User
+from bot.config import config
 
 
 logger = logging.getLogger(__name__)

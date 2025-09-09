@@ -1,7 +1,7 @@
 """Base model of the API database."""
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import func
 from datetime import datetime
+from sqlalchemy import func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
 

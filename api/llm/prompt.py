@@ -1,5 +1,5 @@
 """Prepared AI prompts for AI API requests."""
-from schemas.user import User
+from api.schemas.user import User
 
 
 class PromptManager:

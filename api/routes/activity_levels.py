@@ -2,9 +2,9 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
-from database.database import get_db_session
-from service import activity_level as service
+from api.schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
+from api.database.database import get_db_session
+from api.service import activity_level as service
 
 
 router = APIRouter(prefix="/level")

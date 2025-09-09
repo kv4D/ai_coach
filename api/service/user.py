@@ -2,14 +2,14 @@
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from database.crud import ActivityLevelCRUD, UserCRUD
-from schemas.user import User, UserInput, UserUpdate
-from schemas.utils import models_validate
-from schemas.ai_request import UserAIRequest
-from schemas.activity_level import ActivityLevel
-from exceptions import AlreadyExistError, NotFoundError, ValidationError, \
+from api.database.crud import ActivityLevelCRUD, UserCRUD
+from api.schemas.user import User, UserInput, UserUpdate
+from api.schemas.utils import models_validate
+from api.schemas.ai_request import UserAIRequest
+from api.schemas.activity_level import ActivityLevel
+from api.exceptions import AlreadyExistError, NotFoundError, ValidationError, \
     UnexpectedError
-from llm.ai_client import AIClient
+from api.llm.ai_client import AIClient
 
 
 async def create(user_data: UserInput, session: AsyncSession):

@@ -2,10 +2,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError as PydanticValidationError
-from exceptions import AlreadyExistError, NotFoundError, UnexpectedError, ValidationError
-from database.crud import ActivityLevelCRUD
-from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
-from schemas.utils import models_validate
+from api.exceptions import AlreadyExistError, NotFoundError, UnexpectedError, ValidationError
+from api.database.crud import ActivityLevelCRUD
+from api.schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
+from api.schemas.utils import models_validate
 
 
 async def create(level_data: ActivityLevelInput, session: AsyncSession):

@@ -3,16 +3,16 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.utils.chat_action import ChatActionSender
 from aiogram.fsm.context import FSMContext
-from api.client import APIClient
-from models.activity_level import ActivityLevel
-from models.user import User
-from filters.user import UserDataCallbackFactory
-from service.service import get_activity_levels_description
-from keyboards.common import get_activity_level_kb, get_gender_kb
-from keyboards.profile import get_profile_kb
-from keyboards.commands import set_cancel, set_menu
-from states.main import Main
-from states.profile import Profile
+from bot.api.client import APIClient
+from bot.models.activity_level import ActivityLevel
+from bot.models.user import User
+from bot.filters.user import UserDataCallbackFactory
+from bot.service.service import get_activity_levels_description
+from bot.keyboards.common import get_activity_level_kb, get_gender_kb
+from bot.keyboards.profile import get_profile_kb
+from bot.keyboards.commands import set_cancel, set_menu
+from bot.states.main import Main
+from bot.states.profile import Profile
 
 
 router = Router()

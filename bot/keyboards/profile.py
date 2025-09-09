@@ -1,8 +1,8 @@
 """Keyboards for the profile."""
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
-from models.user import User
-from filters.user import UserDataCallbackFactory
+from bot.models.user import User
+from bot.filters.user import UserDataCallbackFactory
 
 
 def get_profile_kb() -> InlineKeyboardMarkup:

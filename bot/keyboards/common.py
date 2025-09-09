@@ -1,8 +1,8 @@
 """Keyboard that appear in several places in the bot."""
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types.reply_keyboard_markup import ReplyKeyboardMarkup
-from models.enums import GenderEnum
-from api.client import APIClient
+from bot.models.enums import GenderEnum
+from bot.api.client import APIClient
 
 
 def get_gender_kb() -> ReplyKeyboardMarkup:

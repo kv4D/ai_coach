@@ -1,7 +1,7 @@
 """Extra functions for schemas."""
 from typing import TypeVar, Iterable
 from pydantic import BaseModel as PydanticModel
-from database.base_model import BaseDatabaseModel
+from api.database.base_model import BaseDatabaseModel
 
 
 # type parameter for Pydantic BaseModel children

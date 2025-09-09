@@ -2,12 +2,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError as PydanticValidationError
-from exceptions import NotFoundError, UnexpectedError, ValidationError, AIRequestError
-from database.crud import TrainingPlanCRUD
-from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
-from schemas.ai_request import UserAIRequest
-from service.user import get_by_id
-from llm.ai_client import AIClient
+from api.exceptions import NotFoundError, UnexpectedError, ValidationError, AIRequestError
+from api.database.crud import TrainingPlanCRUD
+from api.schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
+from api.schemas.ai_request import UserAIRequest
+from api.llm.ai_client import AIClient
+from .user import get_by_id as get_user_by_id
 
 
 async def create(user_id: int,
@@ -76,7 +76,7 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
         session (`AsyncSession`): an asynchronous database session
     """
     try:
-        user = await get_by_id(request.user_id, session)
+        user = await get_user_by_id(request.user_id, session)
         plan_description = await AIClient.generate_user_plan(user, request.content)
     except NotFoundError:
         await session.rollback()

@@ -1,6 +1,6 @@
-from api.client import APIClient
 from aiohttp import ClientResponseError
-from models.user import User
+from bot.models.user import User
+from bot.api.client import APIClient
 
 
 async def create_user(user: User, api_client: APIClient):

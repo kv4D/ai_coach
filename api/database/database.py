@@ -1,7 +1,7 @@
 """Database related tools. Use to get sessions."""
 from functools import wraps
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from config import config
+from api.config import config
 
 
 engine = create_async_engine(url=config.api_db_url)

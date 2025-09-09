@@ -3,9 +3,9 @@ from aiogram import Router, Bot, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.chat_action import ChatActionSender
-from api.client import APIClient
-from states.main import Main
-from states.use_ai import UseAI
+from bot.api.client import APIClient
+from bot.states.main import Main
+from bot.states.use_ai import UseAI
 
 
 router = Router()
