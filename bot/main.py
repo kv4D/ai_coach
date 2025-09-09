@@ -9,6 +9,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
 from bot.config import config
 from bot.api.client import APIClient
+from bot.middlewares.throttling import ThrottlingMiddleware
 from bot.handlers.start import router as start_router
 from bot.handlers.main import router as main_router
 from bot.handlers.profile import router as profile_router
@@ -38,7 +39,8 @@ async def main():
                   parse_mode=ParseMode.HTML
               ))
 
-    dispatcher = Dispatcher(storage=create_storage())
+    storage = create_storage()
+    dispatcher = Dispatcher(storage=storage)
 
     client = APIClient()
     # close client session with api on bot's shutdown
@@ -49,6 +51,9 @@ async def main():
                                main_router,
                                profile_router,
                                plan_router)
+
+    # include middlewares here
+    dispatcher.update.middleware(ThrottlingMiddleware(storage=storage))
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dispatcher.start_polling(bot, api_client=client)
