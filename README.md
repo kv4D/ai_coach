@@ -42,7 +42,9 @@ Also it was important to create an app that I would use, something useful.
 
 ## Quick start
 ***---STILL UNDER CONSTRUCTION---***
+
 ***No docker contrainers yet***
+
 It is recommended to use venv for installing all of the dependencies.
 
 1) Clone the repository
