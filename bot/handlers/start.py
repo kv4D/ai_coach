@@ -17,6 +17,7 @@ from utils import get_command_descriptions
 
 router = Router()
 
+
 @router.message(Command('cancel'), StateFilter(CreateProfile), UserExistsFilter())
 async def handle_cancel_command(message: Message,
                                 state: FSMContext,
@@ -31,6 +32,7 @@ async def handle_cancel_command(message: Message,
                          reply_markup=ReplyKeyboardRemove())
     await set_menu(bot, message.chat.id)
     await state.set_state(Main.main)
+
 
 @router.message(CommandStart(), StateFilter(Main.main), UserExistsFilter())
 async def handle_old_user_start_command(message: Message,
@@ -53,6 +55,7 @@ async def handle_old_user_start_command(message: Message,
     await set_cancel(bot, message.chat.id)
     await state.set_state(CreateProfile.sending_age)
 
+
 @router.message(CommandStart(), StateFilter(None, Main.main), ~UserExistsFilter())
 async def handle_new_user_start_command(message: Message,
                                         state: FSMContext,
@@ -70,6 +73,7 @@ async def handle_new_user_start_command(message: Message,
                          reply_markup=ReplyKeyboardRemove())
     await message.answer('Введите ваш <b>возраст</b> 🌱')
     await state.set_state(CreateProfile.sending_age)
+
 
 @router.message(F.text, CreateProfile.sending_age)
 async def process_age(message: Message, state: FSMContext):
@@ -94,7 +98,7 @@ async def process_gender(message: Message, state: FSMContext):
     gender = User.validate_gender(message.text)
     await state.update_data(gender=gender)
     await message.answer('А теперь введите ваш <b>рост в сантиметрах</b> 📏',
-                        reply_markup=ReplyKeyboardRemove())
+                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(CreateProfile.sending_height)
 
 
@@ -106,7 +110,7 @@ async def process_height(message: Message, state: FSMContext):
     """
     height = User.validate_height_cm(message.text)
     await message.answer('Укажите ваш <b>вес в килограммах</b> ⚖️',
-                        reply_markup=ReplyKeyboardRemove())
+                         reply_markup=ReplyKeyboardRemove())
     await state.update_data(height_cm=height)
     await state.set_state(CreateProfile.sending_weight)
 
@@ -125,12 +129,12 @@ async def process_weight(message: Message,
         levels_info = await get_activity_levels_description(api_client)
 
         await message.answer('Выберите ваш <b>уровень активности</b> 🔋',
-                            reply_markup=ReplyKeyboardRemove())
+                             reply_markup=ReplyKeyboardRemove())
 
         keyboard = await get_activity_level_kb(api_client)
 
         await message.answer(levels_info,
-                            reply_markup=keyboard)
+                             reply_markup=keyboard)
         await state.update_data(weight_kg=weight)
         await state.set_state(CreateProfile.sending_activity_level)
 
@@ -144,9 +148,9 @@ async def process_activity_level(message: Message,
     """
     activity_level = ActivityLevel.validate_level(message.text)
     await message.answer('Отлично, теперь расскажите о вашей <b>цели</b> 🎯: для чего вы занимаетесь,'
-                        'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
-                        'Если у вас нет цели, то можете так и написать',
-                        reply_markup=ReplyKeyboardRemove())
+                         'чего хотите добиться и прочее. Это сделает мою помощь более полезной.\n\n'
+                         'Если у вас нет цели, то можете так и написать',
+                         reply_markup=ReplyKeyboardRemove())
     await state.update_data(activity_level=activity_level)
     await state.set_state(CreateProfile.sending_goal)
 

@@ -31,7 +31,8 @@ class User(BaseModel):
                 raise ValueError
             return age
         except ValueError as exc:
-            raise ValueError("Возраст должен быть числом от 16 до 100") from exc
+            raise ValueError(
+                "Возраст должен быть числом от 16 до 100") from exc
 
     @field_validator('gender', mode='before')
     @classmethod
@@ -44,7 +45,7 @@ class User(BaseModel):
                 # use stated gender type anyway
                 if gender == gender_type.value or gender_type.name.lower() == gender:
                     return gender_type.name.lower()
-            raise ValueError   
+            raise ValueError
         except ValueError as exc:
             raise ValueError("Такого пола нет") from exc
 
@@ -55,7 +56,7 @@ class User(BaseModel):
             if weight is None:
                 raise ValueError
             if isinstance(weight, str):
-                weight = float(weight.replace(',','.'))
+                weight = float(weight.replace(',', '.'))
             if weight < 30 or weight > 300:
                 raise ValueError
             return weight
@@ -69,7 +70,7 @@ class User(BaseModel):
             if height is None:
                 raise ValueError
             if isinstance(height, str):
-                height = float(height.replace(',','.'))
+                height = float(height.replace(',', '.'))
             if height < 100 or height > 250:
                 raise ValueError
             return height
@@ -97,7 +98,7 @@ class User(BaseModel):
         User instance.
         """
         output = ''
-        
+
         display_fields = ['age',
                           'gender',
                           'weight_kg',

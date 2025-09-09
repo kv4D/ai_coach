@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError as PydanticValidationError
 from exceptions import NotFoundError, UnexpectedError, ValidationError, AIRequestError
-from db.crud.crud import TrainingPlanCRUD
+from database.crud import TrainingPlanCRUD
 from schemas.training_plan import TrainingPlan, TrainingPlanInput, TrainingPlanUpdate
 from schemas.ai_request import UserAIRequest
 from service.user import get_by_id
@@ -29,7 +29,8 @@ async def create(user_id: int,
         await session.rollback()
         error_message = str(exc).lower()
         if 'foreign key' in error_message:
-            raise NotFoundError(f"There is no user with such ID: {user_id}") from exc
+            raise NotFoundError(
+                f"There is no user with such ID: {user_id}") from exc
         raise
     except PydanticValidationError as exc:
         await session.rollback()
@@ -64,6 +65,7 @@ async def update_user_plan(user_id: int,
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc
 
+
 async def generate_plan(request: UserAIRequest, session: AsyncSession):
     """Generate TrainingPlan using AI.
 
@@ -93,6 +95,7 @@ async def generate_plan(request: UserAIRequest, session: AsyncSession):
             plan = TrainingPlanInput(plan_description=plan_description)
             await create(request.user_id, plan, session=session)
 
+
 async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
     """Get the training plan for the user in the database.
 
@@ -102,9 +105,11 @@ async def get_user_plan(user_id: int, session: AsyncSession) -> TrainingPlan:
     """
     plan = await TrainingPlanCRUD.get_by_user_id(user_id, session=session)
     if plan is None:
-        raise NotFoundError(f'There is no training plan for user with this ID: {user_id}')
+        raise NotFoundError(
+            f'There is no training plan for user with this ID: {user_id}')
     plan = TrainingPlan.model_validate(plan)
     return plan
+
 
 async def delete(user_id: int, session: AsyncSession) -> None:
     """Delete the training plan for the user in the database.

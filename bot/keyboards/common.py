@@ -5,9 +5,9 @@ from models.enums import GenderEnum
 from api.client import APIClient
 
 
-def get_gender_kb() -> ReplyKeyboardMarkup: 
+def get_gender_kb() -> ReplyKeyboardMarkup:
     """Creates keyboard for choosing user gender.
-    
+
     Gender options are stated in `GenderEnum`.
     """
     builder = ReplyKeyboardBuilder()
@@ -17,6 +17,7 @@ def get_gender_kb() -> ReplyKeyboardMarkup:
     keyboard = builder.as_markup(resize_keyboard=True,
                                  input_field_placeholder="Нажмите на кнопку для выбора")
     return keyboard
+
 
 async def get_activity_level_kb(api_client: APIClient) -> ReplyKeyboardMarkup:
     """Creates keyboard for choosing user activity level.

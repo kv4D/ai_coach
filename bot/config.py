@@ -17,5 +17,6 @@ class Config(BaseSettings):
     BOT_STORAGE_PORT: int
     API_BASE_URL: str = "http://localhost:8000"
 
+
 # import this to use config
-config = Config() # type: ignore
+config = Config()  # type: ignore

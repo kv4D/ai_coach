@@ -14,6 +14,7 @@ class ActivityLevel(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class ActivityLevelInput(BaseModel):
     """
     Activity level model for input.
@@ -23,6 +24,7 @@ class ActivityLevelInput(BaseModel):
     name: str
     level: int = Field(ge=0,
                        description='Activity level number')
+
 
 class ActivityLevelUpdate(BaseModel):
     """

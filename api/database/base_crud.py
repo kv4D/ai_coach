@@ -4,11 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from exceptions import NotFoundError
-from db.models.base_model import BaseDatabaseModel
+from database.base_model import BaseDatabaseModel
 
 
 # type parameter for BaseModel children
 DatabaseModelT = TypeVar("DatabaseModelT", bound=BaseDatabaseModel)
+
 
 class BaseCRUD(Generic[DatabaseModelT]):
     """

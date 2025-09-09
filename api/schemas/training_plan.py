@@ -28,8 +28,10 @@ class TrainingPlanValidationMixin:
 
         missing = [day for day in days if day not in text.lower()]
         if missing:
-            raise ValueError(f"Some days are not in the plan: {', '.join(missing)}")
+            raise ValueError(
+                f"Some days are not in the plan: {', '.join(missing)}")
         return text
+
 
 class TrainingPlan(BaseModel):
     """
@@ -43,12 +45,14 @@ class TrainingPlan(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class TrainingPlanInput(BaseModel, TrainingPlanValidationMixin):
     """
     Training plan model for database input.
     Use to create database entries.
     """
     plan_description: str
+
 
 class TrainingPlanUpdate(BaseModel, TrainingPlanValidationMixin):
     """

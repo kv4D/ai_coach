@@ -21,6 +21,7 @@ class UserValidationMixin:
             raise ValueError("Gender is either 'male' or 'female'")
         return gender_str
 
+
 class User(BaseModel):
     """
     User model, contains physical data about a user.
@@ -30,7 +31,7 @@ class User(BaseModel):
     username: Optional[str] = Field(default='Пользователь')
     age: int = Field(default=18, gt=0, lt=100)
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
-    height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
+    height_cm: float = Field(default=170, gt=60.0, lt=250.0)
     gender: str
     goal: Optional[str] = None
     activity_level: Optional[int] = None
@@ -38,6 +39,7 @@ class User(BaseModel):
     training_plan: Optional[TrainingPlan] = None
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class UserInput(BaseModel, UserValidationMixin):
     """
@@ -48,10 +50,11 @@ class UserInput(BaseModel, UserValidationMixin):
     username: Optional[str] = None
     age: int = Field(gt=0, lt=100)
     weight_kg: float = Field(default=70, gt=0.0, lt=500.0)
-    height_cm: float = Field(default=170, gt=60.0, lt= 250.0)
+    height_cm: float = Field(default=170, gt=60.0, lt=250.0)
     gender: str
     goal: Optional[str] = None
     activity_level: Optional[int] = None
+
 
 class UserUpdate(BaseModel, UserValidationMixin):
     """
@@ -61,7 +64,7 @@ class UserUpdate(BaseModel, UserValidationMixin):
     username: Optional[str] = Field(default=None)
     age: Optional[int] = Field(default=None, gt=0, lt=100)
     weight_kg: Optional[float] = Field(default=None, gt=0.0, lt=500.0)
-    height_cm: Optional[float] = Field(default=None, gt=60.0, lt= 250.0)
+    height_cm: Optional[float] = Field(default=None, gt=60.0, lt=250.0)
     gender: Optional[str] = None
     goal: Optional[str] = None
     activity_level: Optional[int] = None

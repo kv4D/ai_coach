@@ -18,9 +18,10 @@ async def create_user(user: User, api_client: APIClient):
         # there is a user with this ID, update data
         await api_client.update_user(user)
 
-async def get_activity_levels_description(api_client: APIClient) -> str:    
+
+async def get_activity_levels_description(api_client: APIClient) -> str:
     """Get activity levels descriptions.
-    
+
     Provides string that contains:
     - all levels
     - all fields for every activity level
@@ -36,6 +37,7 @@ async def get_activity_levels_description(api_client: APIClient) -> str:
         return message_str
     except:
         raise
+
 
 async def is_user_exist(user_id: int, api_client: APIClient) -> bool:
     """Check if the user is present in the database.

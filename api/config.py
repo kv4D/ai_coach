@@ -22,6 +22,7 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(env_file=ENV_PATH,
                                       env_file_encoding='utf-8',
                                       extra='ignore')
+
     @property
     def api_db_url(self) -> str:
         """Database URL for the API."""
@@ -30,4 +31,4 @@ class Config(BaseSettings):
 
 
 # import this to get the configuration
-config = Config() # type: ignore
+config = Config()  # type: ignore

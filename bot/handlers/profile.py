@@ -17,6 +17,7 @@ from states.profile import Profile
 
 router = Router()
 
+
 @router.message(Command('cancel'), Profile.changing_field)
 async def cancel_changing_field(message: Message,
                                 bot: Bot,
@@ -32,13 +33,14 @@ async def cancel_changing_field(message: Message,
     await set_menu(bot, chat_id=message.chat.id)
     await state.set_state(Main.main)
 
+
 @router.callback_query(UserDataCallbackFactory.filter(F.field.contains("gender")), Main.main)
 async def callback_user_gender_update(callback: CallbackQuery,
                                       callback_data: UserDataCallbackFactory,
                                       bot: Bot,
                                       state: FSMContext):
     """Handler on `gender` field of User.
-    
+
     Provides gender keyboard.
     """
     field_to_update = callback_data.field
@@ -64,7 +66,7 @@ async def callback_user_activity_update(callback: CallbackQuery,
     """
     field_to_update = callback_data.field
     await callback.message.answer('Выберите новое значение\nИспользуйте /cancel для отмены')
-    
+
     level_info = await get_activity_levels_description(api_client)
     await callback.message.answer(level_info,
                                   reply_markup=await get_activity_level_kb(api_client))
@@ -94,7 +96,7 @@ async def process_new_field_value(message: Message,
                                   bot: Bot,
                                   api_client: APIClient):
     """Handler on user input.
-    
+
     Validates new value and updates user data.
     """
     field_to_update = await state.get_value('field_to_update')
@@ -107,7 +109,7 @@ async def process_new_field_value(message: Message,
         validated_value = validator(new_value) if validator else new_value
 
     # updating value
-    await api_client.update_user_field(message.from_user.id, 
+    await api_client.update_user_field(message.from_user.id,
                                        field_to_update,
                                        validated_value)
     await message.answer("Изменения применены успешно")

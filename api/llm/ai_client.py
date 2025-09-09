@@ -29,15 +29,16 @@ class AIClient:
                     "content": [
                         {"type": "text",
                          "text": prompt},
-                        ]
-                    }
-                ]
-            )
+                    ]
+                }
+            ]
+        )
         # extracting the response
         response = completion.choices[0].message.content
         if response:
             return response
-        raise AIRequestError(f"AI couldn't provide any answer to the request:\n{prompt[:200]}...")
+        raise AIRequestError(
+            f"AI couldn't provide any answer to the request:\n{prompt[:200]}...")
 
     @classmethod
     async def generate_user_plan(cls,

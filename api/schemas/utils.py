@@ -1,13 +1,14 @@
 """Extra functions for schemas."""
 from typing import TypeVar, Iterable
 from pydantic import BaseModel as PydanticModel
-from db.models.base_model import BaseDatabaseModel
+from database.base_model import BaseDatabaseModel
 
 
 # type parameter for Pydantic BaseModel children
 SchemaT = TypeVar("SchemaT", bound=PydanticModel)
 # type parameter for BaseModel children
 DatabaseModelT = TypeVar("DatabaseModelT", bound=BaseDatabaseModel)
+
 
 def models_validate(model: type[SchemaT],
                     db_models: Iterable[DatabaseModelT]) -> list[SchemaT]:

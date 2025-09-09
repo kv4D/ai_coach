@@ -6,10 +6,10 @@ Created for all models in the database.
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from schemas.training_plan import TrainingPlanUpdate
 from exceptions import NotFoundError
-from .base import BaseCRUD
-from .models.models import TrainingPlanModel, UserModel, ActivityLevelModel
+from schemas.training_plan import TrainingPlanUpdate
+from .base_crud import BaseCRUD
+from .models import TrainingPlanModel, UserModel, ActivityLevelModel
 
 
 class UserCRUD(BaseCRUD[UserModel]):

@@ -5,24 +5,25 @@ from exceptions import BaseCustomException
 from routes import user, activity_levels, training_plan
 
 
-app = FastAPI(exception_handlers={BaseCustomException:})
+app = FastAPI()
+
 
 @app.exception_handler(BaseCustomException)
 async def handle_custom_exceptions(request: Request,
                                    exc: BaseCustomException) -> JSONResponse:
     """
     Handle all custom exceptions.
-    
+
     All defined exceptions in `exceptions.py` will be handled here.
     """
     return JSONResponse(
         status_code=exc.status,
         content={
             "message": exc.message,
-            "type": exc.__class__.__name__,  
+            "type": exc.__class__.__name__,
             "detail": str(exc)
-            }
-        )
+        }
+    )
 
 
 # include routers here

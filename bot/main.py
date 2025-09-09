@@ -22,10 +22,12 @@ def create_storage() -> RedisStorage:
     storage = RedisStorage(redis=redis)
     return storage
 
+
 def configure_logging():
-    logging.basicConfig(filename="bot_logs.log", 
+    logging.basicConfig(filename="bot_logs.log",
                         level=logging.INFO,
                         format='[%(asctime)s] %(levelname)s \n%(filename)s:%(lineno)d - %(name)s - %(message)s\n')
+
 
 async def main():
     """Start the bot."""
@@ -35,19 +37,19 @@ async def main():
               default=DefaultBotProperties(
                   parse_mode=ParseMode.HTML
               ))
-    
+
     dispatcher = Dispatcher(storage=create_storage())
-    
+
     client = APIClient()
     # close client session with api on bot's shutdown
     dispatcher.shutdown.register(client.close_session)
-    
+
     # include routers here
-    dispatcher.include_routers(start_router, 
+    dispatcher.include_routers(start_router,
                                main_router,
                                profile_router,
                                plan_router)
-    
+
     await bot.delete_webhook(drop_pending_updates=True)
     await dispatcher.start_polling(bot, api_client=client)
 

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError as PydanticValidationError
 from exceptions import AlreadyExistError, NotFoundError, UnexpectedError, ValidationError
-from db.crud.crud import ActivityLevelCRUD
+from database.crud import ActivityLevelCRUD
 from schemas.activity_level import ActivityLevel, ActivityLevelInput, ActivityLevelUpdate
 from schemas.utils import models_validate
 
@@ -24,7 +24,7 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession):
         if 'unique' in error_message:
             raise AlreadyExistError(
                 f'There is already an activity level with this number: {level_data.level}.'
-                ) from exc
+            ) from exc
         raise
     except PydanticValidationError as exc:
         await session.rollback()
@@ -32,6 +32,7 @@ async def create(level_data: ActivityLevelInput, session: AsyncSession):
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
+
 
 async def get_by_level(level: int, session: AsyncSession) -> ActivityLevel:
     """Get info about the level in the database by its level number.
@@ -47,6 +48,7 @@ async def get_by_level(level: int, session: AsyncSession) -> ActivityLevel:
         raise NotFoundError(f"There is no activity level with level={level}.")
     return ActivityLevel.model_validate(level_model)
 
+
 async def get_all_levels(session: AsyncSession) -> list[ActivityLevel]:
     """Get all activity levels in the database.
 
@@ -57,6 +59,7 @@ async def get_all_levels(session: AsyncSession) -> list[ActivityLevel]:
     if levels is None:
         raise NotFoundError("There are no levels yet.")
     return models_validate(ActivityLevel, levels)
+
 
 async def update(level: int,
                  level_data: ActivityLevelUpdate,
@@ -80,6 +83,7 @@ async def update(level: int,
     except Exception as exc:
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}") from exc
+
 
 async def delete(level: int,
                  session: AsyncSession):

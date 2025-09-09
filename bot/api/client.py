@@ -9,6 +9,7 @@ from config import config
 
 logger = logging.getLogger(__name__)
 
+
 async def check_response_status(response: ClientResponse):
     """Checks request's response status.
 

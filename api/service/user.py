@@ -2,7 +2,7 @@
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from db.crud.crud import ActivityLevelCRUD, UserCRUD
+from database.crud import ActivityLevelCRUD, UserCRUD
 from schemas.user import User, UserInput, UserUpdate
 from schemas.utils import models_validate
 from schemas.ai_request import UserAIRequest
@@ -26,10 +26,12 @@ async def create(user_data: UserInput, session: AsyncSession):
         await session.rollback()
         error_message = str(exc).lower()
         if 'foreign key' in error_message:
-            raise NotFoundError(f"No such activity level: {user_data.activity_level}") from exc
+            raise NotFoundError(
+                f"No such activity level: {user_data.activity_level}") from exc
     except AlreadyExistError as exc:
         await session.rollback()
-        raise AlreadyExistError(f'There is already a user with such ID: {user_data.id}') from exc
+        raise AlreadyExistError(
+            f'There is already a user with such ID: {user_data.id}') from exc
     except PydanticValidationError as exc:
         await session.rollback()
         raise ValidationError(f"Validation error:\n{str(exc)}") from exc
@@ -37,12 +39,15 @@ async def create(user_data: UserInput, session: AsyncSession):
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
+
 async def set_activity_level(user: User, session: AsyncSession):
     """Set activity level for user."""
     if user.activity_level:
         activity_level = await ActivityLevelCRUD.get_by_id(user.activity_level, session)
         if activity_level:
-            user.activity_level_info = ActivityLevel.model_validate(activity_level)
+            user.activity_level_info = ActivityLevel.model_validate(
+                activity_level)
+
 
 async def get_all(session: AsyncSession) -> list[User]:
     """Get all users in the database.
@@ -62,6 +67,7 @@ async def get_all(session: AsyncSession) -> list[User]:
 
     return users
 
+
 async def get_by_id(user_id: int, session: AsyncSession) -> User:
     """Get the user by their ID in the database.
 
@@ -78,6 +84,7 @@ async def get_by_id(user_id: int, session: AsyncSession) -> User:
     await set_activity_level(user, session=session)
 
     return user
+
 
 async def update(user_id: int,
                  user_data: UserUpdate,
@@ -102,6 +109,7 @@ async def update(user_id: int,
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
+
 async def delete(user_id: int,
                  session: AsyncSession) -> None:
     """Delete the user by their ID in the database.
@@ -120,10 +128,11 @@ async def delete(user_id: int,
         await session.rollback()
         raise UnexpectedError(f"An error occurred:\n{str(exc)}.") from exc
 
+
 async def get_ai_answer(request: UserAIRequest,
                         session: AsyncSession) -> str:
     """Answer user's request/answer with AI.
-    
+
     Args:
         user_id (`int`)
         user_request (`str`): user's message to AI

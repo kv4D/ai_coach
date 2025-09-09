@@ -11,7 +11,7 @@ async def set_menu(bot: Bot, chat_id: int | None = None):
 
     Args:
         bot (`Bot`): your bot object    
-    """    
+    """
     menu_commands = [
         BotCommand(command='/my_plan',
                    description='Просмотреть план тренировок'),
@@ -29,6 +29,7 @@ async def set_menu(bot: Bot, chat_id: int | None = None):
     else:
         await bot.set_my_commands(menu_commands)
 
+
 async def set_cancel(bot: Bot, chat_id: int):
     """Set up cancel option with bot commands.
 
@@ -37,7 +38,7 @@ async def set_cancel(bot: Bot, chat_id: int):
 
     Args:
         bot (`Bot`): your bot object    
-    """    
+    """
     menu_commands = [
         BotCommand(command='/cancel',
                    description='Отмена'),

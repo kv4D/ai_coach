@@ -10,6 +10,7 @@ from states.use_ai import UseAI
 
 router = Router()
 
+
 @router.message(F.text, UseAI.sending_request)
 async def handle_plan_request(message: Message,
                               state: FSMContext,

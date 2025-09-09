@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import Optional
-from db.models.base_model import BaseDatabaseModel
+from database.base_model import BaseDatabaseModel
 
 
 class UserModel(BaseDatabaseModel):

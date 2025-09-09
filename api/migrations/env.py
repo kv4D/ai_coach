@@ -4,8 +4,8 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from db.models.base_model import BaseDatabaseModel
-from db.models.models import UserModel, TrainingPlanModel, ActivityLevelModel
+from api.database.base_model import BaseDatabaseModel
+from api.database.models import UserModel, TrainingPlanModel, ActivityLevelModel
 from config import config as app_config
 
 from alembic import context
